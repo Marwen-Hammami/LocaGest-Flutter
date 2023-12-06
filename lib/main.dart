@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/User/DashboardUser.dart';
+import 'package:locagest/screens/User/FogotPassword.dart';
+import 'package:locagest/screens/User/OtpVerify.dart';
+import 'package:locagest/screens/User/SignIn.dart';
+import 'package:locagest/screens/User/SignUp.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       // Remove the debug banner
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.indigo),
-      home: const HomeScreen(),
+      home: SignInScreen(),
     );
   }
 }
@@ -23,18 +29,10 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
-
 class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
-    // Content for User-Maher tab // call the external file for your home screen
-    Container(
-      color: Colors.yellow.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'User-Maher',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    DashboardScreen(), 
+  
     // Content for Agence-Skander tab // call the external file for your home screen
     Container(
       color: Colors.purple.shade100,
