@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class OrdinalBar {
@@ -24,15 +25,17 @@ class ChatResponsiveDashboard extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Handle "Traiter les signalements" button click
-                    // Add the logic for what should happen when this button is clicked
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TreatmentScreen()),
+                    );
                   },
                   child: const Text("Traiter les signalements"),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Handle "Gérer les mots à bannir" button click
-                    // Add the logic for what should happen when this button is clicked
+                    //ici appeler la nouvelle interface
                   },
                   child: const Text("Gérer les mots à bannir"),
                 ),
@@ -56,25 +59,36 @@ class ChatResponsiveDashboard extends StatelessWidget {
                 color: Colors.blue, // You can customize the color if needed
               ),
             ),
-            BarChartSection(
-              chartTitle: 'Mots les plus utilisées',
-              chartData: [
-                OrdinalBar('5ayb', 12),
-                OrdinalBar('bad', 9),
-                OrdinalBar('mauvais', 7),
-                OrdinalBar('zero', 7),
-                OrdinalBar('mort', 6),
-              ],
-            ),
-            BarChartSection(
-              chartTitle: 'Mots les moins utilisées',
-              chartData: [
-                OrdinalBar('insert', 0),
-                OrdinalBar('null', 1),
-                OrdinalBar('%%%', 1),
-                OrdinalBar('tuer', 1),
-                OrdinalBar('!!!!', 3),
-              ],
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  BarChartSection(
+                    chartTitle: 'Mots les plus utilisées',
+                    chartData: [
+                      OrdinalBar('5ayb', 16),
+                      OrdinalBar('####', 14),
+                      OrdinalBar('???', 12),
+                      OrdinalBar('bad', 9),
+                      OrdinalBar('mauvais', 7),
+                      OrdinalBar('zero', 7),
+                      OrdinalBar('mort', 6),
+                    ],
+                  ),
+                  BarChartSection(
+                    chartTitle: 'Mots les moins utilisées',
+                    chartData: [
+                      OrdinalBar('insert', 0),
+                      OrdinalBar('null', 1),
+                      OrdinalBar('%%%', 1),
+                      OrdinalBar('tuer', 1),
+                      OrdinalBar('!?#', 2),
+                      OrdinalBar('!!!!', 3),
+                      OrdinalBar('@@@', 3),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
