@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../utilities/colors.dart';
+
 class OrdinalBar {
   final String x;
   final int y;
@@ -15,6 +17,7 @@ class ChatResponsiveDashboard extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Signalements'),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -128,6 +131,7 @@ class BarChartSection extends StatelessWidget {
                   dataSource: chartData,
                   xValueMapper: (OrdinalBar sales, _) => sales.x,
                   yValueMapper: (OrdinalBar sales, _) => sales.y,
+                  color: AppColors.mainColor, // Use the mainColor here
                 ),
               ],
             ),
