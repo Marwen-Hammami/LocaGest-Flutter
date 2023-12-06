@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/chat_screen/dashboard_chat.dart';
 
 void main() {
   runApp(const MyApp());
@@ -72,14 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
     // Content for Chat-Marwen Tab // call the external file for your home screen
-    Container(
-      color: Colors.green.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Chat-Marwen',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    ChatResponsiveDashboard(),
   ];
 
   int _selectedIndex = 0;
