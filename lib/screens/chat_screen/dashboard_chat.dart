@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
+import 'package:locagest/screens/chat_screen/banned_words_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../utilities/colors.dart';
@@ -38,7 +39,12 @@ class ChatResponsiveDashboard extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    //ici appeler la nouvelle interface
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => BannedWordsScreen()),
+                    );
+                    //ici appeler la nouvelle interface BannedWordsScreen()
                   },
                   child: const Text("Gérer les mots à bannir"),
                 ),
