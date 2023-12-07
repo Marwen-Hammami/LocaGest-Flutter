@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/models/reservation.dart';
+import 'package:locagest/providers/reservation_provider.dart';
+import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ReservationProvider()),
+        // ... autres fournisseurs nécessaires
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -54,14 +66,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
     // Content for Reservation-Jouhayna tab // call the external file for your home screen
-    Container(
-      color: Colors.pink.shade300,
-      alignment: Alignment.center,
-      child: const Text(
-        'Reservation-Jouhayna',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+
+    ReservationScreen(),
+
+    // Container(
+    //   color: Colors.pink.shade300,
+    //   alignment: Alignment.center,
+    //   child: const Text(
+    //     'Reservation-Jouhayna',
+    //     style: TextStyle(fontSize: 40),
+    //   ),
+    // ),
     // Content for Garage-Chiheb Tab // call the external file for your home screen
     Container(
       color: Colors.blue.shade100,
