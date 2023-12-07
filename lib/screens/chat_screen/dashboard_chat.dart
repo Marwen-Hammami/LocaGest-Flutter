@@ -12,7 +12,16 @@ class OrdinalBar {
   OrdinalBar(this.x, this.y);
 }
 
-class ChatResponsiveDashboard extends StatelessWidget {
+class ChatResponsiveDashboard extends StatefulWidget {
+  @override
+  _ChatResponsiveDashboardState createState() =>
+      _ChatResponsiveDashboardState();
+}
+
+class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
+  String selectedTimeFilter = 'Aujourd\'hui';
+  String NbUsersConnected = '12';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +41,8 @@ class ChatResponsiveDashboard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => TreatmentScreen()),
+                        builder: (context) => TreatmentScreen(),
+                      ),
                     );
                   },
                   child: const Text("Traiter les signalements"),
@@ -42,30 +52,42 @@ class ChatResponsiveDashboard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => BannedWordsScreen()),
+                        builder: (context) => BannedWordsScreen(),
+                      ),
                     );
-                    //ici appeler la nouvelle interface BannedWordsScreen()
                   },
                   child: const Text("Gérer les mots à bannir"),
                 ),
               ],
             ),
             SizedBox(height: 20.0),
-            BarChartSection(
-              chartTitle: 'Chart 1',
-              chartData: [
-                OrdinalBar('Jan', 5),
-                OrdinalBar('Feb', 25),
-                OrdinalBar('Mar', 160),
-                OrdinalBar('Apr', 75),
-              ],
+            // Pie Chart Section
+            Text(
+              'Nombre d\'utilisateurs connecté : $NbUsersConnected',
+              style: const TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            SizedBox(height: 20.0),
+            // Pie Chart Section
+            const Text(
+              'Nombre des Signalements',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: AppColors.mainColor,
+              ),
+            ),
+            _buildPieChartSection(),
+            SizedBox(height: 20.0),
+            // Bar Chart Section
             const Text(
               'Utilisation des mots bannis',
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue, // You can customize the color if needed
+                color: AppColors.mainColor,
               ),
             ),
             SingleChildScrollView(
@@ -103,6 +125,88 @@ class ChatResponsiveDashboard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildPieChartSection() {
+    return Column(
+      children: [
+        // Dropdown Section
+        DropdownButton<String>(
+          value: selectedTimeFilter,
+          items: ['Aujourd\'hui', 'Semaine', 'Mois', 'Total']
+              .map<DropdownMenuItem<String>>(
+                (String value) => DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                ),
+              )
+              .toList(),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                selectedTimeFilter = newValue;
+              });
+            }
+          },
+        ),
+        // Pie Chart Section
+        Container(
+          height: 300.0,
+          child: SfCircularChart(
+            series: <CircularSeries>[
+              PieSeries<PieData, String>(
+                dataSource: _getPieChartData(),
+                xValueMapper: (PieData data, _) => data.label,
+                yValueMapper: (PieData data, _) => data.value,
+                dataLabelMapper: (PieData data, _) =>
+                    '${data.label}: ${data.value}',
+                dataLabelSettings: DataLabelSettings(isVisible: true),
+                pointColorMapper: (PieData data, _) {
+                  return data.label == 'Traité'
+                      ? AppColors.mainColor
+                      : AppColors.accentColor;
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<PieData> _getPieChartData() {
+    // Replace this with your actual data
+    switch (selectedTimeFilter) {
+      case 'Aujourd\'hui':
+        return [
+          PieData('Traité', 12),
+          PieData('Non traité', 4),
+        ];
+        break;
+      case 'Semaine':
+        return [
+          PieData('Traité', 33),
+          PieData('Non traité', 9),
+        ];
+        break;
+      case 'Mois':
+        return [
+          PieData('Traité', 70),
+          PieData('Non traité', 30),
+        ];
+        break;
+      case 'Total':
+        return [
+          PieData('Traité', 170),
+          PieData('Non traité', 37),
+        ];
+        break;
+      default:
+        return [
+          PieData('Traité', 1),
+          PieData('Non traité', 1),
+        ];
+    }
   }
 }
 
@@ -146,4 +250,11 @@ class BarChartSection extends StatelessWidget {
       ),
     );
   }
+}
+
+class PieData {
+  final String label;
+  final double value;
+
+  PieData(this.label, this.value);
 }
