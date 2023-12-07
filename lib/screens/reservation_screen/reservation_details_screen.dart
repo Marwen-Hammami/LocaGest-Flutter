@@ -25,26 +25,35 @@ class ReservationDetailsScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Début: ${selectedReservation.DateDebut} - Heure: ${selectedReservation.HeureDebut}',
-              style: TextStyle(fontSize: 18),
+        child: Card(
+          // Utilisation de Card pour encadrer le contenu
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Début: ${selectedReservation.DateDebut} - Heure: ${selectedReservation.HeureDebut}',
+                  style: TextStyle(fontSize: 18),
+                ),
+                Divider(),
+                Text(
+                  'Fin: ${selectedReservation.DateFin} - Heure: ${selectedReservation.HeureFin}',
+                  style: TextStyle(fontSize: 18),
+                ),
+                Divider(),
+                Text(
+                  'Statut: ${selectedReservation.Statut}',
+                  style: TextStyle(fontSize: 18),
+                ),
+                Divider(),
+                Text(
+                  'Montant: ${selectedReservation.Total}',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
             ),
-            Text(
-              'Fin: ${selectedReservation.DateFin} - Heure: ${selectedReservation.HeureFin}',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              'Statut: ${selectedReservation.Statut}',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              'Montant: ${selectedReservation.Total}',
-              style: TextStyle(fontSize: 18),
-            ),
-          ],
+          ),
         ),
       ),
     );
