@@ -19,7 +19,8 @@ class ChatResponsiveDashboard extends StatefulWidget {
 }
 
 class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
-  String selectedTimeFilter = 'Aujourd\'hui'; // Initial value for the dropdown
+  String selectedTimeFilter = 'Aujourd\'hui';
+  String NbUsersConnected = '12';
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +62,21 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
             ),
             SizedBox(height: 20.0),
             // Pie Chart Section
+            Text(
+              'Nombre d\'utilisateurs connecté : $NbUsersConnected',
+              style: const TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 20.0),
+            // Pie Chart Section
             const Text(
               'Nombre des Signalements',
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue,
+                color: AppColors.mainColor,
               ),
             ),
             _buildPieChartSection(),
@@ -77,7 +87,7 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue, // You can customize the color if needed
+                color: AppColors.mainColor,
               ),
             ),
             SingleChildScrollView(
