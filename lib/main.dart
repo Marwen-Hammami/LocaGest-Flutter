@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/chat_screen/dashboard_chat.dart';
+import 'package:locagest/screens/Garage/Distribution/AddDistribution.dart';
+import 'package:locagest/screens/Garage/Tools/AddTools.dart';
+import 'package:locagest/screens/User/DashboardUser.dart';
+import 'package:locagest/screens/User/FogotPassword.dart';
+import 'package:locagest/screens/User/OtpVerify.dart';
+import 'package:locagest/screens/User/SignIn.dart';
+import 'package:locagest/screens/User/SignUp.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       // Remove the debug banner
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.indigo),
-      home: const HomeScreen(),
+      home: SignInScreen(),
     );
   }
 }
@@ -26,15 +35,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
-    // Content for User-Maher tab // call the external file for your home screen
-    Container(
-      color: Colors.yellow.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'User-Maher',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    DashboardScreen(),
+
     // Content for Agence-Skander tab // call the external file for your home screen
     Container(
       color: Colors.purple.shade100,
@@ -63,26 +65,48 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
     // Content for Garage-Chiheb Tab // call the external file for your home screen
-    Container(
-      color: Colors.blue.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Garage-Chiheb',
-        style: TextStyle(fontSize: 40),
+    Builder(
+      builder: (context) => Container(
+        color: Colors.blue.shade100,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Garage',
+              style: TextStyle(fontSize: 40),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddToolsScreen()),
+                );
+              },
+              child: Text("Tools"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddDistributionScreen()),
+                );
+              },
+              child: Text("Distribution"),
+            ),
+          ],
+        ),
       ),
     ),
     // Content for Chat-Marwen Tab // call the external file for your home screen
-    Container(
-      color: Colors.green.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Chat-Marwen',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    ChatResponsiveDashboard(),
   ];
 
   int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
