@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/screens/Garage/Tools/ListViewTools.dart';
-import 'package:locagest/screens/User/SignIn.dart';
+// import 'package:locagest/screens/User/SignIn.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart'; // Add this import for date formatting
 
 class ModifyDistributionScreen extends StatefulWidget {
   @override
-  _ModifyDistributionScreenState createState() => _ModifyDistributionScreenState();
+  _ModifyDistributionScreenState createState() =>
+      _ModifyDistributionScreenState();
 }
 
 class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
   bool _rememberMe = false;
   String _selectedTypeRepair = 'Maintenance'; // or any other default value
-  String _selectedTypePieces ="Cardon";
-  String _selectedTypeCars="Peugeot";
-  String _selectedTypeTechnecien="Chiheb";
+  String _selectedTypePieces = "Cardon";
+  String _selectedTypeCars = "Peugeot";
+  String _selectedTypeTechnecien = "Chiheb";
   final format = DateFormat("yyyy-MM-dd HH:mm");
   @override
   Widget build(BuildContext context) {
@@ -51,9 +52,9 @@ class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
                         isExpanded: true, // Set isExpanded to true
                         items: ['Maintenance', 'Repair', 'Car Wash']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -67,9 +68,9 @@ class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
                         isExpanded: true, // Set isExpanded to true
                         items: ['Eau', 'Cardon', 'Phare']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -83,9 +84,9 @@ class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
                         value: _selectedTypeCars,
                         items: ['Peugeot', 'Mercedes', 'Kia']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -94,15 +95,14 @@ class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
                         },
                         hint: Text('Cars'),
                       ),
-
                       DropdownButton<String>(
                         isExpanded: true, // Set isExpanded to true
                         value: _selectedTypeTechnecien,
                         items: ['Chiheb', 'Saleh', 'Ayoub']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -145,7 +145,6 @@ class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
                           );
                         },
                       ),
-
                       SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -164,7 +163,6 @@ class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
                         ],
                       ),
                       SizedBox(height: 16),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -172,7 +170,8 @@ class _ModifyDistributionScreenState extends State<ModifyDistributionScreen> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ListViewDemo()),
+                                MaterialPageRoute(
+                                    builder: (context) => ListViewDemo()),
                               );
                             },
                             child: const Text('Modifier Distribution'),

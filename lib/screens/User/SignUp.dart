@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:locagest/screens/User/SignIn.dart';
+
 class SignUpScreen extends StatefulWidget {
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -12,20 +12,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade400, const Color.fromARGB(255, 223, 223, 227)],
+            colors: [
+              Colors.blue.shade400,
+              const Color.fromARGB(255, 223, 223, 227)
+            ],
           ),
         ),
         child: Center(
           child: Container(
             alignment: Alignment.center,
             width: 400,
-            height: 500,
+            height: 600,
             child: Card(
               color: Colors.white,
               child: Padding(
@@ -70,7 +72,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: () {
                             // Implement terms and conditions functionality
                           },
-                       
                           child: const Text('Terms and Conditions'),
                         ),
                       ],
@@ -79,10 +80,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: () {
                         // Implement sign-up functionality
                       },
-                         style: ElevatedButton.styleFrom(
-    primary: const Color.fromARGB(255, 57, 168, 58), // Change the button color to red
-  ),
-                      
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(
+                            255, 57, 168, 58), // Change the button color to red
+                      ),
                       child: const Text('Sign Up'),
                     ),
                     Row(
@@ -91,10 +92,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         const Text('Already have an account?'),
                         TextButton(
                           onPressed: () {
-  Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SignInScreen()),
-              );                          },
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignInScreen()),
+                            );
+                          },
                           child: const Text('Sign In'),
                         ),
                       ],

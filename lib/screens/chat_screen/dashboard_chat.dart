@@ -182,25 +182,21 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
           PieData('Traité', 12),
           PieData('Non traité', 4),
         ];
-        break;
       case 'Semaine':
         return [
           PieData('Traité', 33),
           PieData('Non traité', 9),
         ];
-        break;
       case 'Mois':
         return [
           PieData('Traité', 70),
           PieData('Non traité', 30),
         ];
-        break;
       case 'Total':
         return [
           PieData('Traité', 170),
           PieData('Non traité', 37),
         ];
-        break;
       default:
         return [
           PieData('Traité', 1),
