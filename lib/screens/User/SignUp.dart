@@ -25,7 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Container(
             alignment: Alignment.center,
             width: 400,
-            height: 500,
+            height: 600,
             child: Card(
               color: Colors.white,
               child: Padding(
