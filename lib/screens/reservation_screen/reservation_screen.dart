@@ -1,14 +1,14 @@
-import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
 import 'package:locagest/providers/reservation_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:locagest/models/reservation.dart';
 import 'reservation_details_screen.dart';
-import 'package:flutter/material.dart';
+import 'reservation_statistics_chart.dart'; // Assurez-vous d'importer correctement votre fichier
 
 class ReservationScreen extends StatelessWidget {
   List<Reservation> findReservationsForDay(
       DateTime day, List<Reservation> reservations) {
-    // Utilisez la liste des réservations pour trouver les réservations pour la journée spécifiée
     return reservations.where((reservation) {
       return day.isAfter(reservation.DateDebut.subtract(Duration(days: 1))) &&
           day.isBefore(reservation.DateFin.add(Duration(days: 1)));
@@ -46,12 +46,11 @@ class ReservationScreen extends StatelessWidget {
           children: [
             // Calendrier
             TableCalendar(
-              focusedDay: today, // Date actuelle
+              focusedDay: today,
               firstDay: firstDay,
               lastDay: lastDay,
               calendarFormat: CalendarFormat.month,
               eventLoader: (day) {
-                // Utilisez la liste des réservations pour marquer les dates avec des événements
                 var reservationProvider = context.watch<ReservationProvider>();
                 return findReservationsForDay(
                     day, reservationProvider.reservations);
@@ -64,14 +63,24 @@ class ReservationScreen extends StatelessWidget {
                 navigateToReservationDetails(
                     context, selectedDay, reservationProvider);
               },
-              // Autres paramètres du widget...
+              calendarStyle: CalendarStyle(
+                selectedDecoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue,
+                ),
+                todayDecoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.green,
+                ),
+                cellMargin: EdgeInsets.all(4.0),
+                // ... d'autres propriétés de style
+              ),
             ),
 
             // Liste des Réservations
             Container(
-              // Ajout d'un Container pour définir des contraintes de hauteur
+              margin: EdgeInsets.all(16.0),
               height: MediaQuery.of(context).size.height * 0.5,
-              // Ajustez la hauteur selon vos besoins
               child: Builder(
                 builder: (context) {
                   var reservationProvider =
@@ -94,7 +103,7 @@ class ReservationScreen extends StatelessWidget {
               ),
             ),
 
-            // Ajouter une réservation factice lorsqu'un bouton est appuyé, par exemple
+// Ajouter une réservation factice lorsqu'un bouton est appuyé
             ElevatedButton(
               onPressed: () {
                 context.read<ReservationProvider>().addDummyReservation();
@@ -102,8 +111,16 @@ class ReservationScreen extends StatelessWidget {
               child: Text('Ajouter une réservation factice'),
             ),
 
-            // Système de Notification
-            //Text('Système de Notification: ...'),
+            // Diagramme statistique
+            ReservationStatisticsChart(),
+
+            // Ajouter une réservation factice lorsqu'un bouton est appuyé
+            ElevatedButton(
+              onPressed: () {
+                context.read<ReservationProvider>().addDummyReservation();
+              },
+              child: Text('Ajouter une réservation factice'),
+            ),
           ],
         ),
       ),
