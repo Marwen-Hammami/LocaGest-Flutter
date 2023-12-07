@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/User/DashboardUser.dart';
+// import 'package:locagest/screens/User/FogotPassword.dart';
+// import 'package:locagest/screens/User/OtpVerify.dart';
+import 'package:locagest/screens/User/SignIn.dart';
+// import 'package:locagest/screens/User/SignUp.dart';
 
 import 'package:locagest/screens/chat_screen/dashboard_chat.dart';
 import 'package:locagest/screens/Garage/Distribution/AddDistribution.dart';
 import 'package:locagest/screens/Garage/Tools/AddTools.dart';
-import 'package:locagest/screens/User/DashboardUser.dart';
-import 'package:locagest/screens/User/FogotPassword.dart';
-import 'package:locagest/screens/User/OtpVerify.dart';
-import 'package:locagest/screens/User/SignIn.dart';
-import 'package:locagest/screens/User/SignUp.dart';
-import 'package:locagest/models/reservation.dart';
+// import 'package:locagest/screens/User/DashboardUser.dart';
+// import 'package:locagest/screens/User/FogotPassword.dart';
+// import 'package:locagest/screens/User/OtpVerify.dart';
+// import 'package:locagest/screens/User/SignIn.dart';
+// import 'package:locagest/screens/User/SignUp.dart';
+// import 'package:locagest/models/reservation.dart';
 import 'package:locagest/providers/reservation_provider.dart';
 import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +32,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,7 +53,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     DashboardScreen(),
-
     // Content for Agence-Skander tab // call the external file for your home screen
     Container(
       color: Colors.purple.shade100,
