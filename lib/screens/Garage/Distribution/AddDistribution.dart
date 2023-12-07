@@ -13,9 +13,9 @@ class AddDistributionScreen extends StatefulWidget {
 class _AddDistributionScreenState extends State<AddDistributionScreen> {
   bool _rememberMe = false;
   String _selectedTypeRepair = 'Maintenance'; // or any other default value
-String _selectedTypePieces ="Cardon";
-String _selectedTypeCars="Peugeot";
-  String _selectedTypeTechnecien="Chiheb";
+  String _selectedTypePieces = "Cardon";
+  String _selectedTypeCars = "Peugeot";
+  String _selectedTypeTechnecien = "Chiheb";
   final format = DateFormat("yyyy-MM-dd HH:mm");
   @override
   Widget build(BuildContext context) {
@@ -52,9 +52,9 @@ String _selectedTypeCars="Peugeot";
                         isExpanded: true, // Set isExpanded to true
                         items: ['Maintenance', 'Repair', 'Car Wash']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -68,9 +68,9 @@ String _selectedTypeCars="Peugeot";
                         isExpanded: true, // Set isExpanded to true
                         items: ['Eau', 'Cardon', 'Phare']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -84,9 +84,9 @@ String _selectedTypeCars="Peugeot";
                         value: _selectedTypeCars,
                         items: ['Peugeot', 'Mercedes', 'Kia']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -95,15 +95,14 @@ String _selectedTypeCars="Peugeot";
                         },
                         hint: Text('Cars'),
                       ),
-
                       DropdownButton<String>(
                         isExpanded: true, // Set isExpanded to true
                         value: _selectedTypeTechnecien,
                         items: ['Chiheb', 'Saleh', 'Ayoub']
                             .map((String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ))
+                                  value: value,
+                                  child: Text(value),
+                                ))
                             .toList(),
                         onChanged: (String? newValue) {
                           setState(() {
@@ -146,7 +145,6 @@ String _selectedTypeCars="Peugeot";
                           );
                         },
                       ),
-
                       SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -165,7 +163,6 @@ String _selectedTypeCars="Peugeot";
                         ],
                       ),
                       SizedBox(height: 16),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -173,7 +170,9 @@ String _selectedTypeCars="Peugeot";
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ListViewDistribution()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ListViewDistribution()),
                               );
                             },
                             child: const Text('Ajouter Distribution'),

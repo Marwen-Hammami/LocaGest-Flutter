@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/chat_screen/dashboard_chat.dart';
 import 'package:locagest/screens/Garage/Distribution/AddDistribution.dart';
 import 'package:locagest/screens/Garage/Tools/AddTools.dart';
 import 'package:locagest/screens/User/DashboardUser.dart';
@@ -90,7 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddDistributionScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => AddDistributionScreen()),
                 );
               },
               child: Text("Distribution"),
@@ -100,14 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
     // Content for Chat-Marwen Tab // call the external file for your home screen
-    Container(
-      color: Colors.green.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Chat-Marwen',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    ChatResponsiveDashboard(),
   ];
 
   int _selectedIndex = 0;
@@ -120,43 +115,43 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: MediaQuery.of(context).size.width < 640
           ? BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: Colors.indigoAccent,
-        // called when one tab is selected
-        onTap: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        // bottom tab items
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.supervised_user_circle_outlined),
-            label: 'User',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Agence',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.car_rental_outlined),
-            label: 'Flotte',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_printshop_outlined),
-            label: 'Reservation',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.garage_outlined),
-            label: 'Garage',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message_outlined),
-            label: 'Chat',
-          ),
-        ],
-      )
+              currentIndex: _selectedIndex,
+              unselectedItemColor: Colors.grey,
+              selectedItemColor: Colors.indigoAccent,
+              // called when one tab is selected
+              onTap: (int index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              // bottom tab items
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.supervised_user_circle_outlined),
+                  label: 'User',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.business),
+                  label: 'Agence',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.car_rental_outlined),
+                  label: 'Flotte',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.local_printshop_outlined),
+                  label: 'Reservation',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.garage_outlined),
+                  label: 'Garage',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.message_outlined),
+                  label: 'Chat',
+                ),
+              ],
+            )
           : null,
       body: Row(
         children: [
