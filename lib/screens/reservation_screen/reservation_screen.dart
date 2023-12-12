@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/providers/reservation_provider.dart';
+import 'package:locagest/services/reservations_service.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:locagest/models/reservation.dart';
 import 'reservation_details_screen.dart';
-import 'reservation_statistics_chart.dart'; // Assurez-vous d'importer correctement votre fichier
+import 'reservation_statistics_chart.dart'; 
 
 class ReservationScreen extends StatelessWidget {
   List<Reservation> findReservationsForDay(
@@ -77,31 +78,41 @@ class ReservationScreen extends StatelessWidget {
               ),
             ),
 
-            // Liste des Réservations
-            Container(
-              margin: EdgeInsets.all(16.0),
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: Builder(
-                builder: (context) {
-                  var reservationProvider =
-                      context.watch<ReservationProvider>();
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: reservationProvider.reservations.length,
-                    itemBuilder: (context, index) {
-                      Reservation reservation =
-                          reservationProvider.reservations[index];
-                      return ListTile(
-                        title: Text(
-                            'Début: ${reservation.DateDebut} - Heure: ${reservation.HeureDebut}'),
-                        subtitle: Text(
-                            'Fin: ${reservation.DateFin} - Heure: ${reservation.HeureFin} | Statut: ${reservation.Statut} | Montant: ${reservation.Total}'),
-                      );
-                    },
-                  );
-                },
+          // Liste des Réservations
+Container(
+  margin: EdgeInsets.all(16.0),
+  height: MediaQuery.of(context).size.height * 0.5,
+  child: FutureBuilder<List<Reservation>>(
+    future: ReservationService().getAllReservations('http://192.168.1.15:9090'),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CircularProgressIndicator();
+      } else if (snapshot.hasError) {
+        return Text('Erreur: ${snapshot.error}');
+      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return Text('Aucune réservation trouvée.');
+      } else {
+        List<Reservation> reservations = snapshot.data!;
+        return ListView.builder(
+          itemCount: reservations.length,
+          itemBuilder: (context, index) {
+            Reservation reservation = reservations[index];
+            return ListTile(
+              title: Text(
+                'Début: ${reservation.DateDebut} - Heure: ${reservation.HeureDebut}',
               ),
-            ),
+              subtitle: Text(
+                'Fin: ${reservation.DateFin} - Heure: ${reservation.HeureFin} | Statut: ${reservation.Statut} | Montant: ${reservation.Total}',
+              ),
+            );
+          },
+        );
+      }
+    },
+  ),
+),
+
+
 
 // Ajouter une réservation factice lorsqu'un bouton est appuyé
             ElevatedButton(
