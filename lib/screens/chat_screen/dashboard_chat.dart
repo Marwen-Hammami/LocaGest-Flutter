@@ -5,7 +5,6 @@ import 'package:locagest/screens/chat_screen/banned_words_pieChart.dart';
 import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 import '../../services/BannedWordService.dart';
 import '../../utilities/colors.dart';
@@ -278,15 +277,49 @@ Widget _buildExamplePieChart() {
 }
 
 Widget _buildMostBannedWordsBarChart(List<BannedWord> bannedWords) {
-  return Container(
-    height: 300.0,
-    child: BarChartBannedWords(bannedWords: bannedWords),
+  // Sort the bannedWords list based on usedCount in descending order
+  bannedWords.sort((a, b) => b.usedCount.compareTo(a.usedCount));
+
+  // Take the top five elements
+  final topFiveWords = bannedWords.take(5).toList();
+
+  return Column(
+    children: [
+      const Text(
+        'Les mots les plus utilisés',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      Container(
+        height: 300.0,
+        child: BarChartBannedWords(bannedWords: topFiveWords),
+      ),
+    ],
   );
 }
 
 Widget _buildLeastBannedWordsBarChart(List<BannedWord> bannedWords) {
-  return Container(
-    height: 300.0,
-    child: BarChartBannedWords(bannedWords: bannedWords),
+  // Sort the bannedWords list based on usedCount in ascending order
+  bannedWords.sort((a, b) => a.usedCount.compareTo(b.usedCount));
+
+  // Take the first five elements (least used)
+  final leastFiveWords = bannedWords.take(5).toList();
+
+  return Column(
+    children: [
+      const Text(
+        'Les mots les moins utilisés',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      Container(
+        height: 300.0,
+        child: BarChartBannedWords(bannedWords: leastFiveWords),
+      ),
+    ],
   );
 }

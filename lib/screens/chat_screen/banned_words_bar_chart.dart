@@ -27,8 +27,8 @@ class _BarChartBannedWordsState extends State<BarChartBannedWords> {
     // Iterate over bannedWords and add elements to dataList
     widget.bannedWords.forEach((BannedWord word) {
       // Assuming BannedWord has a property named 'value', replace it with the actual property
-      widget.dataList
-          .add(_BarData(AppColors.accentColor, word.usedCount as double, 0));
+      widget.dataList.add(_BarData(
+          AppColors.mainColor, word.usedCount as double, 0, word.word));
     });
   }
 
@@ -100,6 +100,7 @@ class _BarChartBannedWordsState extends State<BarChartBannedWords> {
                       axisSide: meta.axisSide,
                       child: _IconWidget(
                         color: widget.dataList[index].color,
+                        word: widget.dataList[index].word,
                         isSelected: touchedGroupIndex == index,
                       ),
                     );
@@ -178,18 +179,21 @@ class _BarChartBannedWordsState extends State<BarChartBannedWords> {
 }
 
 class _BarData {
-  const _BarData(this.color, this.value, this.shadowValue);
+  const _BarData(this.color, this.value, this.shadowValue, this.word);
   final Color color;
   final double value;
   final double shadowValue;
+  final String word;
 }
 
 class _IconWidget extends ImplicitlyAnimatedWidget {
   const _IconWidget({
     required this.color,
+    required this.word,
     required this.isSelected,
   }) : super(duration: const Duration(milliseconds: 300));
   final Color color;
+  final String word;
   final bool isSelected;
 
   @override
@@ -207,10 +211,13 @@ class _IconWidgetState extends AnimatedWidgetBaseState<_IconWidget> {
     return Transform(
       transform: Matrix4.rotationZ(rotation).scaled(scale, scale),
       origin: const Offset(14, 14),
-      child: Icon(
-        widget.isSelected ? Icons.face_retouching_natural : Icons.face,
-        color: widget.color,
-        size: 28,
+      child: Text(
+        widget.word,
+        style: TextStyle(
+          color: widget.isSelected ? AppColors.accentColor : widget.color,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
