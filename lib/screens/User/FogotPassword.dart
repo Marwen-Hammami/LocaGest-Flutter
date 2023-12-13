@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:locagest/screens/User/OtpVerify.dart';
+import 'package:locagest/services/User_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override
@@ -8,10 +8,19 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
- @override
+  final TextEditingController _emailController = TextEditingController();
+    AuthService _authService = AuthService(); // Initialize the AuthService
+
+  
+
+  Future<void> sendForgotPasswordRequest(String email) async {
+    // Call the function from your service file
+    await _authService.sendForgotPasswordRequest(email);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -53,6 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                       ),
@@ -60,13 +70,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     SizedBox(height: 20.0),
                     ElevatedButton(
                       onPressed: () {
-  Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => OTPVerifyScreen()),
-              );                      },
+                        final email = _emailController.text;
+                        sendForgotPasswordRequest(email); // Call the sendForgotPasswordRequest function
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => OTPVerifyScreen()),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
-    primary: Color.fromARGB(255, 57, 168, 58), // Change the button color to red
-  ),
+                        primary: Color.fromARGB(255, 57, 168, 58), // Change the button color to red
+                      ),
                       child: Text('Reset Password'),
                     ),
                   ],

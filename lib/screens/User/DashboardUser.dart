@@ -23,7 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     userService.getAllUsers().then((fetchedUsers) {
       setState(() {
         users = fetchedUsers
-            .map((user) => User(username: user['username'], roles: user['roles']))
+            .map((user) => User(email: user['email'], roles: user['roles']))
             .toList();
       });
     }).catchError((error) {
@@ -49,7 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (index != -1) {
         users[index] = newUser;
         final updatedUser = users[index];
-        AuthService.updateRoleByUsername(updatedUser.username ?? '', updatedUser.roles ?? '')
+        AuthService.updateRoleByEmail(updatedUser.email ?? '', updatedUser.roles ?? '')
           .then((result) {
             if (result['success']) {
               print(result['success']); // Role updated successfully
@@ -138,7 +138,7 @@ class UserProfileCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                user.username ?? '',
+                user.email ?? '',
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
@@ -193,7 +193,7 @@ class UserProfileCard extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   TextEditingController nameController =
-                      TextEditingController(text: user.username);
+                      TextEditingController(text: user.email);
                   TextEditingController roleController =
                       TextEditingController(text: user.roles);
 
@@ -203,7 +203,7 @@ class UserProfileCard extends StatelessWidget {
                       children: [
                         TextField(
                           controller: nameController,
-                          decoration: InputDecoration(labelText: 'username'),
+                          decoration: InputDecoration(labelText: 'email'),
                         ),
                         TextField(
                           controller: roleController,
@@ -229,7 +229,7 @@ class UserProfileCard extends StatelessWidget {
 
                       // Create a new User object with updated values
                       final newUser = User(
-                        username: updatedUsername,
+                        email: updatedUsername,
                         roles: updatedRoles,
                       );
 

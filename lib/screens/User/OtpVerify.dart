@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/screens/User/ResetPassword.dart';
+import 'package:locagest/services/User_service.dart';
 
 class OTPVerifyScreen extends StatefulWidget {
   @override
@@ -7,10 +8,26 @@ class OTPVerifyScreen extends StatefulWidget {
 }
 
 class _OTPVerifyScreenState extends State<OTPVerifyScreen> {
+  final TextEditingController _otpController = TextEditingController();
+    AuthService _authService = AuthService(); // Initialize the AuthService
+
+  Future<void> _verifyOTP() async {
+    final otpCode = _otpController.text;
+    final isOTPValid = await _authService.verifyOTP(otpCode);
+
+    if (isOTPValid) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ResetPasswordScreen()),
+      );
+    } else {
+      // Handle invalid OTP code
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -52,20 +69,17 @@ class _OTPVerifyScreenState extends State<OTPVerifyScreen> {
                     ),
                     SizedBox(height: 20.0),
                     TextFormField(
+                      controller: _otpController,
                       decoration: InputDecoration(
                         labelText: 'OTP Code',
                       ),
                     ),
                     SizedBox(height: 20.0),
                     ElevatedButton(
-                      onPressed: () {
-  Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ResetPasswordScreen()),
-              );                      },
+                      onPressed: _verifyOTP, // Call _verifyOTP function
                       style: ElevatedButton.styleFrom(
-    primary: Color.fromARGB(255, 57, 168, 58), // Change the button color to red
-  ),
+                        primary: Color.fromARGB(255, 57, 168, 58),
+                      ),
                       child: Text('Verify'),
                     ),
                   ],
