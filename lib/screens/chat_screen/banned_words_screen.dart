@@ -63,9 +63,9 @@ class _BannedWordsScreenState extends State<BannedWordsScreen> {
               DataCell(Text(data.word)),
               DataCell(Text(data.usedCount.toString())),
               DataCell(
-                ElevatedButton.icon(
+                IconButton(
+                  icon: const Icon(Icons.delete),
                   onPressed: () async {
-                    // Show confirmation dialog
                     bool confirmed =
                         await _showDeleteConfirmationDialog(context);
 
@@ -89,11 +89,6 @@ class _BannedWordsScreenState extends State<BannedWordsScreen> {
                       }
                     }
                   },
-                  icon: Icon(Icons.delete, color: Colors.white),
-                  label: Text(''),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
-                  ),
                 ),
               ),
             ]),
@@ -120,7 +115,7 @@ class _BannedWordsScreenState extends State<BannedWordsScreen> {
               onPressed: () {
                 Navigator.of(context).pop(true); // User chose to confirm
               },
-              child: Text('Bannir'),
+              child: Text('Supprimer'),
             ),
           ],
         );
