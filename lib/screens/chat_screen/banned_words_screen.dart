@@ -64,8 +64,30 @@ class _BannedWordsScreenState extends State<BannedWordsScreen> {
               DataCell(Text(data.usedCount.toString())),
               DataCell(
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // Handle delete action
+                  onPressed: () async {
+                    // Show confirmation dialog
+                    bool confirmed =
+                        await _showDeleteConfirmationDialog(context);
+
+                    if (confirmed) {
+                      // Handle delete action
+                      String? wordId = data.id;
+
+                      if (wordId != null) {
+                        await bannedWordService.deleteBannedWord(wordId);
+
+                        // Fetch the updated list of banned words
+                        List<BannedWord> updatedBannedWords =
+                            await bannedWordService.getBannedWords();
+
+                        // Set state to rebuild the UI with the updated list of banned words
+                        setState(() {
+                          bannedWords = updatedBannedWords;
+                        });
+                      } else {
+                        print('Error: Cannot delete a word with null ID.');
+                      }
+                    }
                   },
                   icon: Icon(Icons.delete, color: Colors.white),
                   label: Text(''),
@@ -77,6 +99,32 @@ class _BannedWordsScreenState extends State<BannedWordsScreen> {
             ]),
           )
           .toList(),
+    );
+  }
+
+  Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Êtes-vous sûre de vouloir supprimer ce mot banni ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User chose to cancel
+              },
+              child: Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User chose to confirm
+              },
+              child: Text('Bannir'),
+            ),
+          ],
+        );
+      },
     );
   }
 
