@@ -17,34 +17,36 @@ class _BannedWordsScreenState extends State<BannedWordsScreen> {
       appBar: AppBar(
         title: const Text('Gérer les mots Bannis'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                _showBanWordDialog(context);
-              },
-              child: const Text('Bannir un mot'),
-            ),
-            SizedBox(height: 10.0),
-            FutureBuilder<List<BannedWord>>(
-              future: bannedWordService.getBannedWords(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Text('No banned words available.');
-                } else {
-                  bannedWords = snapshot.data!;
-                  return _buildBannedWordsTable(bannedWords);
-                }
-              },
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  _showBanWordDialog(context);
+                },
+                child: const Text('Bannir un mot'),
+              ),
+              SizedBox(height: 10.0),
+              FutureBuilder<List<BannedWord>>(
+                future: bannedWordService.getBannedWords(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Text('No banned words available.');
+                  } else {
+                    bannedWords = snapshot.data!;
+                    return _buildBannedWordsTable(bannedWords);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
