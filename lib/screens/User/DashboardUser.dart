@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'package:syncfusion_flutter_charts/charts.dart' ;
-
-
-class User {
-  final String name;
-  final String role;
-
-  User({required this.name, required this.role});
-}
+import 'package:locagest/models/User.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:locagest/services/User_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -16,11 +9,27 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  List<User> users = [
-    User(name: 'John Doe', role: 'Software Developer'),
-    User(name: 'Jane Smith', role: 'Product Manager'),
-    User(name: 'Alice Johnson', role: 'Graphic Designer'),
-  ];
+  List<User> users = [];
+
+  AuthService userService = AuthService(); // Initialize the AuthService
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUsers();
+  }
+
+  void fetchUsers() {
+    userService.getAllUsers().then((fetchedUsers) {
+      setState(() {
+        users = fetchedUsers
+            .map((user) => User(username: user['username'], roles: user['roles']))
+            .toList();
+      });
+    }).catchError((error) {
+      print('Failed to fetch users: $error');
+    });
+  }
 
   void addUser(User user) {
     setState(() {
@@ -39,6 +48,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final index = users.indexOf(oldUser);
       if (index != -1) {
         users[index] = newUser;
+        final updatedUser = users[index];
+        AuthService.updateRoleByUsername(updatedUser.username ?? '', updatedUser.roles ?? '')
+          .then((result) {
+            if (result['success']) {
+              print(result['success']); // Role updated successfully
+              // Handle success
+            } else {
+              print(result['error']); // Error message
+              // Handle error
+            }
+          })
+          .catchError((error) {
+            print('Failed to update role: $error');
+            // Handle error
+          });
       }
     });
   }
@@ -50,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            UserProfileSection(users: users),
+            UserProfileSection(users: users, editUser: editUser),
             SizedBox(height: 20.0),
             StatisticsSection(),
             SizedBox(height: 20.0),
@@ -64,25 +88,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 class UserProfileSection extends StatelessWidget {
   final List<User> users;
+  final Function(User, User) editUser;
 
-  UserProfileSection({required this.users});
+  UserProfileSection({required this.users, required this.editUser});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 400,
       padding: EdgeInsets.all(20.0),
       color: Colors.blue,
-      child: Column(
-        children: users.map((user) => UserProfileCard(user: user)).toList(),
-      ),
+      child: users.isEmpty
+          ? Text(
+              'No users found',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.white,
+              ),
+            )
+          : ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                final user = users[index];
+                return UserProfileCard(user: user, editUser: editUser);
+              },
+            ),
     );
   }
 }
 
 class UserProfileCard extends StatelessWidget {
   final User user;
+  final Function(User, User) editUser;
 
-  UserProfileCard({required this.user});
+  UserProfileCard({required this.user, required this.editUser});
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +138,7 @@ class UserProfileCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                user.name,
+                user.username ?? '',
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
@@ -107,7 +146,7 @@ class UserProfileCard extends StatelessWidget {
                 ),
               ),
               Text(
-                user.role,
+                user.roles ?? '',
                 style: TextStyle(
                   fontSize: 16.0,
                   color: Colors.white,
@@ -137,7 +176,7 @@ class UserProfileCard extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pop();
                           // Call delete function here
-                         // deleteUser(user);
+                          // deleteUser(user);
                         },
                       ),
                     ],
@@ -154,9 +193,9 @@ class UserProfileCard extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   TextEditingController nameController =
-                      TextEditingController(text: user.name);
+                      TextEditingController(text: user.username);
                   TextEditingController roleController =
-                      TextEditingController(text: user.role);
+                      TextEditingController(text: user.roles);
 
                   return AlertDialog(
                     title: Text('Edit User'),
@@ -164,11 +203,11 @@ class UserProfileCard extends StatelessWidget {
                       children: [
                         TextField(
                           controller: nameController,
-                          decoration: InputDecoration(labelText: 'Name'),
+                          decoration: InputDecoration(labelText: 'username'),
                         ),
                         TextField(
                           controller: roleController,
-                          decoration: InputDecoration(labelText: 'Role'),
+                          decoration: InputDecoration(labelText: 'roles'),
                         ),
                       ],
                     ),
@@ -180,12 +219,23 @@ class UserProfileCard extends StatelessWidget {
                         },
                       ),
                       TextButton(
-                        child: Text('Save'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          // Call edit function here
-                        
-                        },
+                    child: Text('Save'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+
+                      // Retrieve the updated values from the text controllers
+                      final updatedUsername = nameController.text;
+                      final updatedRoles = roleController.text;
+
+                      // Create a new User object with updated values
+                      final newUser = User(
+                        username: updatedUsername,
+                        roles: updatedRoles,
+                      );
+
+                      // Call the editUser function to update the user
+                      editUser(user, newUser);
+                    },
                       ),
                     ],
                   );
