@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/models/BannedWord.dart';
+import 'package:locagest/services/BannedWordService.dart';
 
-class BannedWordsScreen extends StatelessWidget {
+class BannedWordsScreen extends StatefulWidget {
+  @override
+  _BannedWordsScreenState createState() => _BannedWordsScreenState();
+}
+
+class _BannedWordsScreenState extends State<BannedWordsScreen> {
+  final BannedWordService bannedWordService = BannedWordService();
+  List<BannedWord> bannedWords = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,40 +24,48 @@ class BannedWordsScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                _showBanWordDialog(context); // Show the ban word dialog
+                _showBanWordDialog(context);
               },
               child: const Text('Bannir un mot'),
             ),
             SizedBox(height: 10.0),
-            _buildBannedWordsTable(),
+            FutureBuilder<List<BannedWord>>(
+              future: bannedWordService.getBannedWords(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Text('No banned words available.');
+                } else {
+                  bannedWords = snapshot.data!;
+                  return _buildBannedWordsTable(bannedWords);
+                }
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBannedWordsTable() {
-    List<Map<String, dynamic>> bannedWordsData = [
-      {'word': 'Mot1', 'usageCount': 10},
-      {'word': 'Mot2', 'usageCount': 5},
-      {'word': 'Mot3', 'usageCount': 8},
-    ];
-
+  Widget _buildBannedWordsTable(List<BannedWord> bannedWords) {
     return DataTable(
       columns: const [
         DataColumn(label: Text('Mot')),
         DataColumn(label: Text('Nombre utilisations')),
         DataColumn(label: Text('Actions')),
       ],
-      rows: bannedWordsData
+      rows: bannedWords
           .map(
             (data) => DataRow(cells: [
-              DataCell(Text(data['word'].toString())),
-              DataCell(Text(data['usageCount'].toString())),
+              DataCell(Text(data.word)),
+              DataCell(Text(data.usedCount.toString())),
               DataCell(
                 ElevatedButton.icon(
                   onPressed: () {
-                    //on click
+                    // Handle delete action
                   },
                   icon: Icon(Icons.delete, color: Colors.white),
                   label: Text(''),
@@ -68,37 +86,54 @@ class BannedWordsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Saisir le mot à bannir'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: textFieldController,
-                decoration: InputDecoration(labelText: 'Mot'),
-              ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  String wordToBan = textFieldController.text;
-                  // Add logic to handle the ban word action
-                  print('Banning word: $wordToBan');
-                  Navigator.pop(context); // Close the dialog
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.red,
-                ),
-                child: const Text(
-                  'Bannir',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+        return _buildBanWordDialog(context, textFieldController);
       },
+    );
+  }
+
+  Widget _buildBanWordDialog(
+      BuildContext context, TextEditingController controller) {
+    return AlertDialog(
+      title: Text('Saisir le mot à bannir'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: 'Mot'),
+          ),
+          SizedBox(height: 20.0),
+          ElevatedButton(
+            onPressed: () async {
+              String wordToBan = controller.text;
+
+              // Call the service to create the banned word
+              await bannedWordService.createBannedWord(wordToBan);
+
+              // Fetch the updated list of banned words
+              List<BannedWord> updatedBannedWords =
+                  await bannedWordService.getBannedWords();
+
+              // Close the dialog
+              Navigator.pop(context);
+
+              // Set state to rebuild the UI with the updated list of banned words
+              setState(() {
+                bannedWords = updatedBannedWords;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.red,
+            ),
+            child: const Text(
+              'Bannir',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
