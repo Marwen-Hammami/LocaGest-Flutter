@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/models/BannedWord.dart';
+import 'package:locagest/screens/chat_screen/banned_words_bar_chart.dart';
+import 'package:locagest/screens/chat_screen/banned_words_pieChart.dart';
 import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:fl_chart/fl_chart.dart';
 
+import '../../services/BannedWordService.dart';
 import '../../utilities/colors.dart';
 
 class OrdinalBar {
@@ -19,6 +24,9 @@ class ChatResponsiveDashboard extends StatefulWidget {
 }
 
 class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
+  final BannedWordService bannedWordService = BannedWordService();
+  List<BannedWord> bannedWords = [];
+
   String selectedTimeFilter = 'Aujourd\'hui';
   String NbUsersConnected = '12';
 
@@ -80,6 +88,7 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
               ),
             ),
             _buildPieChartSection(),
+            _buildExamplePieChart(), // new pie
             SizedBox(height: 20.0),
             // Bar Chart Section
             const Text(
@@ -94,29 +103,35 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  BarChartSection(
-                    chartTitle: 'Mots les plus utilisées',
-                    chartData: [
-                      OrdinalBar('5ayb', 16),
-                      OrdinalBar('####', 14),
-                      OrdinalBar('???', 12),
-                      OrdinalBar('bad', 9),
-                      OrdinalBar('mauvais', 7),
-                      OrdinalBar('zero', 7),
-                      OrdinalBar('mort', 6),
-                    ],
+                  FutureBuilder<List<BannedWord>>(
+                    future: bannedWordService.getBannedWords(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Text('No banned words available.');
+                      } else {
+                        bannedWords = snapshot.data!;
+                        return _buildMostBannedWordsBarChart(bannedWords);
+                      }
+                    },
                   ),
-                  BarChartSection(
-                    chartTitle: 'Mots les moins utilisées',
-                    chartData: [
-                      OrdinalBar('insert', 0),
-                      OrdinalBar('null', 1),
-                      OrdinalBar('%%%', 1),
-                      OrdinalBar('tuer', 1),
-                      OrdinalBar('!?#', 2),
-                      OrdinalBar('!!!!', 3),
-                      OrdinalBar('@@@', 3),
-                    ],
+                  FutureBuilder<List<BannedWord>>(
+                    future: bannedWordService.getBannedWords(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Text('No banned words available.');
+                      } else {
+                        bannedWords = snapshot.data!;
+                        return _buildLeastBannedWordsBarChart(bannedWords);
+                      }
+                    },
                   ),
                 ],
               ),
@@ -253,4 +268,25 @@ class PieData {
   final double value;
 
   PieData(this.label, this.value);
+}
+
+Widget _buildExamplePieChart() {
+  return Container(
+    height: 300.0,
+    child: PieChartBannedWords(),
+  );
+}
+
+Widget _buildMostBannedWordsBarChart(List<BannedWord> bannedWords) {
+  return Container(
+    height: 300.0,
+    child: BarChartBannedWords(bannedWords: bannedWords),
+  );
+}
+
+Widget _buildLeastBannedWordsBarChart(List<BannedWord> bannedWords) {
+  return Container(
+    height: 300.0,
+    child: BarChartBannedWords(bannedWords: bannedWords),
+  );
 }
