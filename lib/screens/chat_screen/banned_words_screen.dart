@@ -21,7 +21,7 @@ class _BannedWordsScreenState extends State<BannedWordsScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               ElevatedButton(
                 onPressed: () {

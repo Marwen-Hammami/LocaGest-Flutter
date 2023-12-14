@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/models/BannedWord.dart';
+import 'package:locagest/models/Signalement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_bar_chart.dart';
-import 'package:locagest/screens/chat_screen/banned_words_pieChart.dart';
 import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../services/BannedWordService.dart';
+import '../../services/SignalementService.dart';
 import '../../utilities/colors.dart';
 
 class OrdinalBar {
@@ -26,8 +27,10 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
   final BannedWordService bannedWordService = BannedWordService();
   List<BannedWord> bannedWords = [];
 
+  final SignalementsService signalementsService = SignalementsService();
+  List<Signalement> signalements = [];
+
   String selectedTimeFilter = 'Aujourd\'hui';
-  String NbUsersConnected = '12';
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,7 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -67,28 +70,61 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
                 ),
               ],
             ),
-            SizedBox(height: 20.0),
-            // Pie Chart Section
-            Text(
-              'Nombre d\'utilisateurs connecté : $NbUsersConnected',
-              style: const TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             // Pie Chart Section
             const Text(
-              'Nombre des Signalements',
+              'Signalements',
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
                 color: AppColors.mainColor,
               ),
             ),
-            _buildPieChartSection(),
-            _buildExamplePieChart(), // new pie
-            SizedBox(height: 20.0),
+            // Dropdown Section
+            DropdownButton<String>(
+              value: selectedTimeFilter,
+              items: ['Aujourd\'hui', 'Semaine', 'Mois', 'Total']
+                  .map<DropdownMenuItem<String>>(
+                    (String value) => DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedTimeFilter = newValue;
+                  });
+                }
+              },
+            ),
+
+            FutureBuilder<List<Signalement>>(
+              future: signalementsService.getSignalements(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Text('No signalements available.');
+                } else {
+                  // Data is ready, update the list
+                  signalements = snapshot.data!;
+                  return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _buildPieChartSection(signalements, "Traité"),
+                        _buildPieChartSection(
+                            signalements, "Traité Automatiquement"),
+                        _buildPieChartSection(
+                            signalements, "Signalement Pertinant"),
+                      ]);
+                }
+              },
+            ),
+            const SizedBox(height: 20.0),
             // Bar Chart Section
             const Text(
               'Utilisation des mots bannis',
@@ -106,11 +142,11 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
                     future: bannedWordService.getBannedWords(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Text('No banned words available.');
+                        return const Text('No banned words available.');
                       } else {
                         bannedWords = snapshot.data!;
                         return _buildMostBannedWordsBarChart(bannedWords);
@@ -121,11 +157,11 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
                     future: bannedWordService.getBannedWords(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Text('No banned words available.');
+                        return const Text('No banned words available.');
                       } else {
                         bannedWords = snapshot.data!;
                         return _buildLeastBannedWordsBarChart(bannedWords);
@@ -141,40 +177,29 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
     );
   }
 
-  Widget _buildPieChartSection() {
+  Widget _buildPieChartSection(List<Signalement> signalements, String titre) {
+    // Pie Chart Section
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Dropdown Section
-        DropdownButton<String>(
-          value: selectedTimeFilter,
-          items: ['Aujourd\'hui', 'Semaine', 'Mois', 'Total']
-              .map<DropdownMenuItem<String>>(
-                (String value) => DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                ),
-              )
-              .toList(),
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              setState(() {
-                selectedTimeFilter = newValue;
-              });
-            }
-          },
+        Text(
+          titre ?? 'Default Title',
+          style: const TextStyle(
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        // Pie Chart Section
         Container(
           height: 300.0,
           child: SfCircularChart(
             series: <CircularSeries>[
               PieSeries<PieData, String>(
-                dataSource: _getPieChartData(),
+                dataSource: _getPieChartData(signalements, titre),
                 xValueMapper: (PieData data, _) => data.label,
                 yValueMapper: (PieData data, _) => data.value,
                 dataLabelMapper: (PieData data, _) =>
                     '${data.label}: ${data.value}',
-                dataLabelSettings: DataLabelSettings(isVisible: true),
+                dataLabelSettings: const DataLabelSettings(isVisible: true),
                 pointColorMapper: (PieData data, _) {
                   return data.label == 'Traité'
                       ? AppColors.mainColor
@@ -188,29 +213,211 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
     );
   }
 
-  List<PieData> _getPieChartData() {
+  List<PieData> _getPieChartData(List<Signalement> signalements, String titre) {
     // Replace this with your actual data
     switch (selectedTimeFilter) {
       case 'Aujourd\'hui':
-        return [
-          PieData('Traité', 12),
-          PieData('Non traité', 4),
-        ];
+        // Filter signalements for today
+        DateTime today = DateTime.now();
+        List<Signalement> todaySignalements = signalements
+            .where((signalement) => isToday(signalement.createdAt, today))
+            .toList();
+        if (titre == "Traité") {
+          int countT = 0;
+          int countNonT = 0;
+          todaySignalements.forEach((Signalement signalement) {
+            if (signalement.traite) {
+              countT += 1;
+            } else {
+              countNonT += 1;
+            }
+          });
+          return [
+            PieData('Traité', countT as double),
+            PieData('Non traité', countNonT as double),
+          ];
+        } else if (titre == "Traité Automatiquement") {
+          int countTA = 0;
+          int countNonTA = 0;
+          todaySignalements.forEach((Signalement signalement) {
+            if (signalement.traiteAutomatiquement) {
+              countTA += 1;
+            } else {
+              countNonTA += 1;
+            }
+          });
+          return [
+            PieData('Automatiquement', countTA as double),
+            PieData('Non Automatiquement', countNonTA as double),
+          ];
+        } else {
+          int countSP = 0;
+          int countNonSP = 0;
+          todaySignalements.forEach((Signalement signalement) {
+            if (signalement.signalementPertinant) {
+              countSP += 1;
+            } else {
+              countNonSP += 1;
+            }
+          });
+          return [
+            PieData('Pertinent', countSP as double),
+            PieData('Non Pertinent', countNonSP as double),
+          ];
+        }
+
       case 'Semaine':
-        return [
-          PieData('Traité', 33),
-          PieData('Non traité', 9),
-        ];
+        // Filter signalements for this week
+        DateTime now = DateTime.now();
+        DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+        DateTime endOfWeek =
+            now.add(Duration(days: DateTime.daysPerWeek - now.weekday));
+
+        List<Signalement> weekSignalements = signalements
+            .where((signalement) =>
+                isWithinWeek(signalement.createdAt, startOfWeek, endOfWeek))
+            .toList();
+        if (titre == "Traité") {
+          int countT = 0;
+          int countNonT = 0;
+          weekSignalements.forEach((Signalement signalement) {
+            if (signalement.traite) {
+              countT += 1;
+            } else {
+              countNonT += 1;
+            }
+          });
+          return [
+            PieData('Traité', countT as double),
+            PieData('Non traité', countNonT as double),
+          ];
+        } else if (titre == "Traité Automatiquement") {
+          int countTA = 0;
+          int countNonTA = 0;
+          weekSignalements.forEach((Signalement signalement) {
+            if (signalement.traiteAutomatiquement) {
+              countTA += 1;
+            } else {
+              countNonTA += 1;
+            }
+          });
+          return [
+            PieData('Automatiquement', countTA as double),
+            PieData('Non Automatiquement', countNonTA as double),
+          ];
+        } else {
+          int countSP = 0;
+          int countNonSP = 0;
+          weekSignalements.forEach((Signalement signalement) {
+            if (signalement.signalementPertinant) {
+              countSP += 1;
+            } else {
+              countNonSP += 1;
+            }
+          });
+          return [
+            PieData('Pertinent', countSP as double),
+            PieData('Non Pertinent', countNonSP as double),
+          ];
+        }
       case 'Mois':
-        return [
-          PieData('Traité', 70),
-          PieData('Non traité', 30),
-        ];
+        // Filter signalements for this month
+        DateTime now = DateTime.now();
+        DateTime startOfMonth = DateTime(now.year, now.month, 1);
+        DateTime endOfMonth =
+            DateTime(now.year, now.month + 1, 1).subtract(Duration(days: 1));
+
+        List<Signalement> monthSignalements = signalements
+            .where((signalement) =>
+                isWithinMonth(signalement.createdAt, startOfMonth, endOfMonth))
+            .toList();
+        if (titre == "Traité") {
+          int countT = 0;
+          int countNonT = 0;
+          monthSignalements.forEach((Signalement signalement) {
+            if (signalement.traite) {
+              countT += 1;
+            } else {
+              countNonT += 1;
+            }
+          });
+          return [
+            PieData('Traité', countT as double),
+            PieData('Non traité', countNonT as double),
+          ];
+        } else if (titre == "Traité Automatiquement") {
+          int countTA = 0;
+          int countNonTA = 0;
+          monthSignalements.forEach((Signalement signalement) {
+            if (signalement.traiteAutomatiquement) {
+              countTA += 1;
+            } else {
+              countNonTA += 1;
+            }
+          });
+          return [
+            PieData('Automatiquement', countTA as double),
+            PieData('Non Automatiquement', countNonTA as double),
+          ];
+        } else {
+          int countSP = 0;
+          int countNonSP = 0;
+          monthSignalements.forEach((Signalement signalement) {
+            if (signalement.signalementPertinant) {
+              countSP += 1;
+            } else {
+              countNonSP += 1;
+            }
+          });
+          return [
+            PieData('Pertinent', countSP as double),
+            PieData('Non Pertinent', countNonSP as double),
+          ];
+        }
       case 'Total':
-        return [
-          PieData('Traité', 170),
-          PieData('Non traité', 37),
-        ];
+        if (titre == "Traité") {
+          int countT = 0;
+          int countNonT = 0;
+          signalements.forEach((Signalement signalement) {
+            if (signalement.traite) {
+              countT += 1;
+            } else {
+              countNonT += 1;
+            }
+          });
+          return [
+            PieData('Traité', countT as double),
+            PieData('Non traité', countNonT as double),
+          ];
+        } else if (titre == "Traité Automatiquement") {
+          int countTA = 0;
+          int countNonTA = 0;
+          signalements.forEach((Signalement signalement) {
+            if (signalement.traiteAutomatiquement) {
+              countTA += 1;
+            } else {
+              countNonTA += 1;
+            }
+          });
+          return [
+            PieData('Automatiquement', countTA as double),
+            PieData('Non Automatiquement', countNonTA as double),
+          ];
+        } else {
+          int countSP = 0;
+          int countNonSP = 0;
+          signalements.forEach((Signalement signalement) {
+            if (signalement.signalementPertinant) {
+              countSP += 1;
+            } else {
+              countNonSP += 1;
+            }
+          });
+          return [
+            PieData('Pertinent', countSP as double),
+            PieData('Non Pertinent', countNonSP as double),
+          ];
+        }
       default:
         return [
           PieData('Traité', 1),
@@ -218,6 +425,22 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
         ];
     }
   }
+}
+
+bool isToday(DateTime date, DateTime today) {
+  return date.year == today.year &&
+      date.month == today.month &&
+      date.day == today.day;
+}
+
+bool isWithinWeek(DateTime date, DateTime startOfWeek, DateTime endOfWeek) {
+  return date.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
+      date.isBefore(endOfWeek.add(Duration(days: 1)));
+}
+
+bool isWithinMonth(DateTime date, DateTime startOfMonth, DateTime endOfMonth) {
+  return date.isAfter(startOfMonth.subtract(Duration(days: 1))) &&
+      date.isBefore(endOfMonth.add(Duration(days: 1)));
 }
 
 class BarChartSection extends StatelessWidget {
@@ -229,19 +452,19 @@ class BarChartSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(20.0),
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             chartTitle,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24.0,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
           Container(
             height: 200.0,
             child: SfCartesianChart(
@@ -267,13 +490,6 @@ class PieData {
   final double value;
 
   PieData(this.label, this.value);
-}
-
-Widget _buildExamplePieChart() {
-  return Container(
-    height: 300.0,
-    child: PieChartBannedWords(),
-  );
 }
 
 Widget _buildMostBannedWordsBarChart(List<BannedWord> bannedWords) {

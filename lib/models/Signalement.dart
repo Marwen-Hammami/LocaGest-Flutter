@@ -25,16 +25,16 @@ class Signalement {
 
   factory Signalement.fromJson(Map<String, dynamic> json) {
     return Signalement(
-      id: json['_id'],
-      messageId: json['messageId'],
-      signaleurId: json['signaleurId'],
-      raison: json['raison'],
-      raisonAutre: json['raisonAutre'],
-      traite: json['traite'],
-      traiteAutomatiquement: json['traiteAutomatiquement'],
-      signalementPertinant: json['signalementPertinant'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      id: json['_id'] ?? '',
+      messageId: json['messageId'] ?? '',
+      signaleurId: json['signaleurId'] ?? '',
+      raison: json['raison'] ?? 'Harcèlement',
+      raisonAutre: json['raisonAutre'] ?? '',
+      traite: json['traite'] ?? false,
+      traiteAutomatiquement: json['traiteAutomatiquement'] ?? false,
+      signalementPertinant: json['signalementPertinant'] ?? false,
+      createdAt: DateTime.parse(json['createdAt'] ?? ''),
+      updatedAt: DateTime.parse(json['updatedAt'] ?? ''),
     );
   }
 

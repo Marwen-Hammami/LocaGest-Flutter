@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:locagest/models/Signalement.dart';
 
-class BannedWordService {
+class SignalementsService {
   final String baseUrl = "http://localhost:9090/messages/signalements/";
 
   Future<List<Signalement>> getSignalements() async {
