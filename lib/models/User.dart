@@ -1,5 +1,5 @@
-
 class User {
+  String? id;
   String? username;
   String? email;
   String? password;
@@ -13,13 +13,17 @@ class User {
   int? experience;
   String? roles;
   bool isVerified;
+  bool isBanned;
+
   String? token;
   String? resetToken;
   DateTime? resetTokenExpiration;
   String? otpCode;
   DateTime? otpExpiration;
 
+
   User({
+    this.id,
     this.username,
     this.email,
     this.password,
@@ -33,16 +37,18 @@ class User {
     this.experience,
     this.roles = 'admin',
     this.isVerified = false,
+    this.isBanned = false,
+
     this.token,
     this.resetToken,
     this.resetTokenExpiration,
     this.otpCode,
     this.otpExpiration,
   });
-  
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      id:json['_id'],
       username: json['username'],
       email: json['email'],
       password: json['password'],
@@ -56,16 +62,23 @@ class User {
       experience: json['experience'],
       roles: json['roles'],
       isVerified: json['isVerified'],
+            isBanned: json['isBanned'],
+
       token: json['token'],
       resetToken: json['resetToken'],
-      resetTokenExpiration: DateTime.parse(json['resetTokenExpiration']),
+      resetTokenExpiration: json['resetTokenExpiration'] != null
+          ? DateTime.parse(json['resetTokenExpiration'])
+          : null,
       otpCode: json['otpCode'],
-      otpExpiration: DateTime.parse(json['otpExpiration']),
+      otpExpiration: json['otpExpiration'] != null
+          ? DateTime.parse(json['otpExpiration'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id':id,
       'username': username,
       'email': email,
       'password': password,
@@ -79,11 +92,13 @@ class User {
       'experience': experience,
       'roles': roles,
       'isVerified': isVerified,
+            'isBanned': isBanned,
+
       'token': token,
       'resetToken': resetToken,
-      //'resetTokenExpiration': resetTokenExpiration.toIso8601String(),
+      'resetTokenExpiration': resetTokenExpiration?.toIso8601String(),
       'otpCode': otpCode,
-      //'otpExpiration': otpExpiration.toIso8601String(),
+      'otpExpiration': otpExpiration?.toIso8601String(),
     };
   }
 }

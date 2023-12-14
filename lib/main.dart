@@ -4,6 +4,7 @@ import 'package:locagest/screens/User/FogotPassword.dart';
 import 'package:locagest/screens/User/OtpVerify.dart';
 import 'package:locagest/screens/User/SignIn.dart';
 import 'package:locagest/screens/User/SignUp.dart';
+import 'package:locagest/screens/User/profile.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,7 +32,8 @@ class HomeScreen extends StatefulWidget {
 }
 class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
-    DashboardScreen(), 
+   // DashboardScreen(), 
+   UserProfile(),
   
     // Content for Agence-Skander tab // call the external file for your home screen
     Container(

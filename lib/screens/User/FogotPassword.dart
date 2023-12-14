@@ -82,6 +82,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       child: Text('Reset Password'),
                     ),
+                    
                   ],
                 ),
               ),

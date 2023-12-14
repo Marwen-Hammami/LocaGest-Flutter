@@ -1,10 +1,11 @@
   import 'dart:convert';
   import 'package:http/http.dart' as http;
+import 'package:locagest/models/User.dart';
   import 'package:shared_preferences/shared_preferences.dart';
 
 
   class AuthService {
-    static const String baseUrl = 'http://192.168.1.150:9090/User'; // Replace with your Node.js API URL
+    static const String baseUrl = 'http://localhost:9090/User'; // Replace with your Node.js API URL
 
     Future<Map<String, dynamic>> signInUser(String email, String password) async {
       final url = Uri.parse('$baseUrl/signingA');
@@ -23,6 +24,10 @@
           final token = responseData['token'];
 
           await saveSession('token', token);
+
+           final userId = userData['id'];
+         SharedPreferences prefs = await SharedPreferences.getInstance();
+         await prefs.setString('userId', userId);
 
           return {'userData': userData, 'token': token};
         } else {
@@ -63,6 +68,76 @@ Future<Map<String, dynamic>> signUpUser(String username, String email, String pa
     throw Exception('Failed to sign up: $error');
   }
 }
+
+Future<Map<String, dynamic>> banUser(String userId) async {
+    try {
+      final url = '$baseUrl/banUser/$userId';
+      final response = await http.post(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to ban user: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception('Failed to ban user: $error');
+    }
+  }
+
+  Future<Map<String, dynamic>> unbanUser(String userId) async {
+    try {
+      final url = '$baseUrl/unbanUser/$userId';
+      final response = await http.post(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to unban user: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception('Failed to unban user: $error');
+    }
+  }
+
+  Future<Map<String, dynamic>> banUserWithDuration(String userId, int duration) async {
+    try {
+      final url = '$baseUrl/banUserWithDuration/$userId';
+      final body = {'duration': duration.toString()};
+      final response = await http.post(Uri.parse(url), body: body);
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to ban user with duration: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception('Failed to ban user with duration: $error');
+    }
+  }
+Future<User> getUserFromId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId'); // Retrieve the user ID from shared preferences
+
+    if (userId == null) {
+      throw Exception('User ID not found in shared preferences');
+    }
+
+    final url = '$baseUrl/get/$userId'; // Assuming the API endpoint is /users/{id}
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      // User found
+      final userData = json.decode(response.body);
+      return User.fromJson(userData);
+    } else if (response.statusCode == 404) {
+      // User not found
+      throw Exception('User not found');
+    } else {
+      // Other error
+      throw Exception('Failed to retrieve user: ${response.statusCode}');
+    }
+  }
+
 Future<void> sendForgotPasswordRequest(String email) async {
     final url = Uri.parse('$baseUrl/password');
 
@@ -170,6 +245,15 @@ Future<List<dynamic>> getAllUsers() async {
       return 'An error occurred while updating the password.';
     }
   }
+  Future<int> getUserCount() async {
+  try {
+    final List users = await getAllUsers();
+    return users.length;
+  } catch (error) {
+    print('Failed to get user count: $error');
+    throw error;
+  }
+}
 
 
   static Future<Map<String, dynamic>> updateRoleByEmail(
