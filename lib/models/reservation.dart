@@ -15,15 +15,14 @@ class Reservation {
     required this.Total,
   });
 
-  // // Ajoutez une méthode pour créer une instance de la classe à partir d'une carte (Map)
-  // factory Reservation.fromJson(Map<String, dynamic> json) {
-  //   return Reservation(
-  //     DateDebut: DateTime.parse(json['DateDebut']),
-  //     DateFin: DateTime.parse(json['DateFin']),
-  //     HeureDebut: json['HeureDebut'],
-  //     HeureFin: json['HeureFin'],
-  //     Statut: json['Statut'],
-  //     Total: json['Total'].toDouble(),
-  //   );
-  // }
+ factory Reservation.fromJson(Map<String, dynamic> json) {
+    return Reservation(
+      DateDebut: DateTime.parse(json['DateDebut']),
+      DateFin: DateTime.parse(json['DateFin']),
+      HeureDebut: json['HeureDebut'],
+      HeureFin: json['HeureFin'],
+      Statut: json['Statut'],
+      Total: json['Total'].toDouble(),
+    );
+  }
 }

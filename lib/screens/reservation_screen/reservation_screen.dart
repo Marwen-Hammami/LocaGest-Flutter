@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/providers/reservation_provider.dart';
+import 'package:locagest/screens/reservation_screen/line_chart_sample2.dart';
+import 'package:locagest/screens/reservation_screen/pie_chart_sample3.dart';
+import 'package:locagest/screens/reservation_screen/line_chart_sample1.dart';
+import 'package:locagest/services/reservations_service.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:locagest/models/reservation.dart';
 import 'reservation_details_screen.dart';
-import 'reservation_statistics_chart.dart'; // Assurez-vous d'importer correctement votre fichier
+import 'reservation_statistics_chart.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
 class ReservationScreen extends StatelessWidget {
   List<Reservation> findReservationsForDay(
@@ -42,8 +48,50 @@ class ReservationScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Reservations')),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Diagramme statistique
+            // ReservationStatisticsChart(),
+
+            // Ajouter des statistiques
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Statistiques sur le nombre total de réservations
+                  Text(
+                    'Statistiques sur le nombre total de réservations',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontFamily: 'Mukta'),
+                  ),
+                  LineChartSample1(),
+
+                  // Statistiques sur les revenus générés par les réservations
+                  Text(
+                    'Statistiques sur les revenus générés par les réservations',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontFamily: 'Mukta'),
+                  ),
+                  LineChartSample2(),
+
+                  // Statistiques sur le statut des réservations
+                  Text(
+                    'Statistiques sur le statut des réservations',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontFamily: 'Mukta'),
+                  ),
+                  PieChartSample3(),
+                ],
+              ),
+            ),
+
             // Calendrier
             TableCalendar(
               focusedDay: today,
@@ -73,7 +121,26 @@ class ReservationScreen extends StatelessWidget {
                   color: Colors.green,
                 ),
                 cellMargin: EdgeInsets.all(4.0),
-                // ... d'autres propriétés de style
+              ),
+            ),
+
+            // Ajout du menu déroulant pour filtrer par statut
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DropdownButton<String>(
+                value: 'Toutes',
+                onChanged: (String? newValue) {
+                  // Met à jour le statut sélectionné et recharge la liste des réservations
+                  // Vous pouvez également ajouter un appel pour recharger les données en fonction du statut ici
+                  // par exemple, appel à une fonction de filtrage des réservations en fonction du statut
+                },
+                items: <String>['Toutes', 'Reservée', 'Payée', 'Achevée']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
             ),
 
@@ -81,45 +148,57 @@ class ReservationScreen extends StatelessWidget {
             Container(
               margin: EdgeInsets.all(16.0),
               height: MediaQuery.of(context).size.height * 0.5,
-              child: Builder(
-                builder: (context) {
-                  var reservationProvider =
-                      context.watch<ReservationProvider>();
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: reservationProvider.reservations.length,
-                    itemBuilder: (context, index) {
-                      Reservation reservation =
-                          reservationProvider.reservations[index];
-                      return ListTile(
-                        title: Text(
-                            'Début: ${reservation.DateDebut} - Heure: ${reservation.HeureDebut}'),
-                        subtitle: Text(
-                            'Fin: ${reservation.DateFin} - Heure: ${reservation.HeureFin} | Statut: ${reservation.Statut} | Montant: ${reservation.Total}'),
-                      );
-                    },
-                  );
+              child: FutureBuilder<List<Reservation>>(
+                future: ReservationService()
+                    .getAllReservations('http://localhost:9090'),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Erreur: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Text('Aucune réservation trouvée.');
+                  } else {
+                    List<Reservation> reservations = snapshot.data!;
+                    // Filtre les réservations en fonction du statut sélectionné
+                    String selectedStatut = 'Toutes';
+                    if (selectedStatut != 'Toutes') {
+                      reservations = reservations
+                          .where((reservation) =>
+                              reservation.Statut == selectedStatut)
+                          .toList();
+                    }
+
+                    return ListView.builder(
+                      itemCount: reservations.length,
+                      itemBuilder: (context, index) {
+                        Reservation reservation = reservations[index];
+                        return Card(
+                          elevation: 5,
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: GestureDetector(
+                            onTap: () {
+                              navigateToReservationDetails(
+                                  context,
+                                  reservation.DateDebut,
+                                  context.read<ReservationProvider>());
+                            },
+                            child: ListTile(
+                              title: Text(
+                                'Date Début: ${DateFormat('yyyy-MM-dd').format(reservation.DateDebut)} ---> Date Fin: ${DateFormat('yyyy-MM-dd').format(reservation.DateFin)} ',
+                              ),
+                              subtitle: Text(
+                                ' Statut: ${reservation.Statut} ',
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
               ),
-            ),
-
-// Ajouter une réservation factice lorsqu'un bouton est appuyé
-            ElevatedButton(
-              onPressed: () {
-                context.read<ReservationProvider>().addDummyReservation();
-              },
-              child: Text('Ajouter une réservation factice'),
-            ),
-
-            // Diagramme statistique
-            ReservationStatisticsChart(),
-
-            // Ajouter une réservation factice lorsqu'un bouton est appuyé
-            ElevatedButton(
-              onPressed: () {
-                context.read<ReservationProvider>().addDummyReservation();
-              },
-              child: Text('Ajouter une réservation factice'),
             ),
           ],
         ),

@@ -36,6 +36,8 @@ dependencies:
   table_calendar: ^3.0.0
   fl_chart: ^0.65.0
   http: ^1.1.2
+  flutter_svg: ^2.0.7
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,7 +65,14 @@ flutter:
     - assets/images/
     - images/logo_pdm.png
     - images/client.png
+    - assets/fonts/
 
+  fonts:
+    - family: Mukta-Regular
+      fonts:
+        - asset: assets/fonts/Mukta-Regular.ttf
+
+      
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
