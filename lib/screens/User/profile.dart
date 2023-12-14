@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/models/User.dart';
 import 'package:locagest/screens/User/DashboardUser.dart';
-import 'package:locagest/services/User_service.dart'; // Import the DashboardScreen class
+import 'package:locagest/screens/User/UpdateUser.dart';
+import 'package:locagest/services/User_service.dart'; // Import the AuthService and UserService
 
 class UserProfile extends StatelessWidget {
   AuthService _userService = AuthService(); // Initialize the AuthService
@@ -64,12 +65,12 @@ class UserProfile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.location_on,
+                        Icons.phone,
                         color: Colors.blue,
                       ),
                       SizedBox(width: 8.0),
                       Text(
-                        'New York, USA', // Replace with the user's location
+                         user?.phoneNumber ?? 'No username', // Replace with the user's location
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.blue,
@@ -81,15 +82,36 @@ class UserProfile extends StatelessWidget {
                   Text(
                     '',
                     style: TextStyle(
-                      fontSize: 20.0,
+                      fontSize: 40.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 8.0),
                   Text(
-                    ' '
-                    
-                    
+                     user?.roles ?? 'No roles',
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => UpdateProfilePage()), // Pass the user object to the UpdateProfilePage
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24.0),
+                      ),
+                    ),
+                    child: Text(
+                      'Update Profile',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                      ),
+                    ),
                   ),
                   SizedBox(height: 16.0),
                   ElevatedButton(

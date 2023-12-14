@@ -69,6 +69,50 @@ Future<Map<String, dynamic>> signUpUser(String username, String email, String pa
   }
 }
 
+
+
+Future<Map<String, dynamic>> updateUser({
+  required String username,
+  required String email,
+  String? password,
+  required String firstName,
+  required String lastName,
+  required String phoneNumber,
+  required String creditCardNumber,
+}) async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId'); // Assuming 'userId' is the key used to store the user ID in shared preferences
+
+    if (userId == null) {
+      throw Exception('User ID not found in shared preferences');
+    }
+
+    final url = '$baseUrl/$userId';
+    final body = {
+      'username': username,
+      'firstName': firstName,
+      'lastName': lastName,
+      'phoneNumber': phoneNumber,
+      'creditCardNumber': creditCardNumber,
+    };
+    final response = await http.put(
+      Uri.parse(url),
+      body: jsonEncode(body),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else if (response.statusCode == 404) {
+      throw Exception('User not found');
+    } else {
+      throw Exception('Failed to update user: ${response.body}');
+    }
+  } catch (error) {
+    throw Exception('Failed to update user: $error');
+  }
+}
 Future<Map<String, dynamic>> banUser(String userId) async {
     try {
       final url = '$baseUrl/banUser/$userId';
