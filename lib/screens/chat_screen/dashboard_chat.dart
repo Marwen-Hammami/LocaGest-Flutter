@@ -4,11 +4,13 @@ import 'package:locagest/models/Signalement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_bar_chart.dart';
 import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_screen.dart';
+import 'package:locagest/screens/chat_screen/temps_dattente_bar_chart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../services/BannedWordService.dart';
 import '../../services/SignalementService.dart';
 import '../../utilities/colors.dart';
+import '../../utilities/waiting_time.dart';
 
 class OrdinalBar {
   final String x;
@@ -29,6 +31,8 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
 
   final SignalementsService signalementsService = SignalementsService();
   List<Signalement> signalements = [];
+
+  late WaitingTimeStats? stats;
 
   String selectedTimeFilter = 'Aujourd\'hui';
 
@@ -112,6 +116,7 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
                 } else {
                   // Data is ready, update the list
                   signalements = snapshot.data!;
+                  stats = calculateWaitingTimeStats(signalements);
                   return Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -124,6 +129,54 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
                 }
               },
             ),
+            const SizedBox(height: 20.0),
+            const Text(
+              "Temps d'attente moyen des Signalements",
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: AppColors.mainColor,
+              ),
+            ),
+            FutureBuilder<void>(future: () async {
+              stats = await calculateWaitingTimeStats(signalements);
+            }(), builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (stats == null) {
+                return const Text('No data available.');
+              } else {
+                // Data is ready, update the stats
+                return Column(children: [
+                  const SizedBox(height: 20.0),
+                  Text(
+                    "Temps d'attente minimal : " +
+                        "${stats!.minTime.inMinutes} min",
+                    style: const TextStyle(
+                      fontSize: 15.0,
+                    ),
+                  ),
+                  Text(
+                    "Temps d'attente maximal : " +
+                        "${stats!.maxTime.inDays} jour",
+                    style: const TextStyle(
+                      fontSize: 15.0,
+                    ),
+                  ),
+                  Text(
+                    "Temps d'attente moyen : " +
+                        "${stats!.averageWaitingTime.inMinutes} min",
+                    style: const TextStyle(
+                      fontSize: 15.0,
+                    ),
+                  ),
+                ]);
+              }
+            }),
+            const SizedBox(height: 20.0),
+
             const SizedBox(height: 20.0),
             // Bar Chart Section
             const Text(
