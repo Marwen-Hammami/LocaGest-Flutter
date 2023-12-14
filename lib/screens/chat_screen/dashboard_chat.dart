@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:locagest/models/BannedWord.dart';
 import 'package:locagest/models/Signalement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_bar_chart.dart';
+import 'package:locagest/screens/chat_screen/raison_bar_chart.dart';
 import 'package:locagest/screens/chat_screen/signalement_traitement.dart';
 import 'package:locagest/screens/chat_screen/banned_words_screen.dart';
-import 'package:locagest/screens/chat_screen/temps_dattente_bar_chart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../services/BannedWordService.dart';
@@ -130,6 +130,30 @@ class _ChatResponsiveDashboardState extends State<ChatResponsiveDashboard> {
               },
             ),
             const SizedBox(height: 20.0),
+            // const Text(
+            //   "Raisons des Signalements",
+            //   style: TextStyle(
+            //     fontSize: 20.0,
+            //     fontWeight: FontWeight.bold,
+            //     color: AppColors.mainColor,
+            //   ),
+            // ),
+            // FutureBuilder<List<Signalement>>(
+            //   future: signalementsService.getSignalements(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return const CircularProgressIndicator();
+            //     } else if (snapshot.hasError) {
+            //       return Text('Error: ${snapshot.error}');
+            //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            //       return const Text('No banned words available.');
+            //     } else {
+            //       signalements = snapshot.data!;
+            //       return BarCharRaisonDeSignalement(signalements: signalements);
+            //     }
+            //   },
+            // ),
+            // const SizedBox(height: 20.0),
             const Text(
               "Temps d'attente moyen des Signalements",
               style: TextStyle(
