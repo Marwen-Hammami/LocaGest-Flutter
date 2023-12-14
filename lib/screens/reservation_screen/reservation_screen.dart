@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:locagest/providers/reservation_provider.dart';
 import 'package:locagest/screens/reservation_screen/line_chart_sample2.dart';
 import 'package:locagest/screens/reservation_screen/pie_chart_sample3.dart';
+import 'package:locagest/screens/reservation_screen/line_chart_sample1.dart';
 import 'package:locagest/services/reservations_service.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -10,6 +10,7 @@ import 'package:locagest/models/reservation.dart';
 import 'reservation_details_screen.dart';
 import 'reservation_statistics_chart.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
 class ReservationScreen extends StatelessWidget {
   List<Reservation> findReservationsForDay(
@@ -36,8 +37,6 @@ class ReservationScreen extends StatelessWidget {
       ),
     );
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +67,7 @@ class ReservationScreen extends StatelessWidget {
                         fontSize: 18,
                         fontFamily: 'Mukta'),
                   ),
-                 // buildBarChart(),
+                  LineChartSample1(),
 
                   // Statistiques sur les revenus générés par les réservations
                   Text(
@@ -78,7 +77,7 @@ class ReservationScreen extends StatelessWidget {
                         fontSize: 18,
                         fontFamily: 'Mukta'),
                   ),
-                LineChartSample2(),
+                  LineChartSample2(),
 
                   // Statistiques sur le statut des réservations
                   Text(
@@ -122,7 +121,7 @@ class ReservationScreen extends StatelessWidget {
                   color: Colors.green,
                 ),
                 cellMargin: EdgeInsets.all(4.0),
-                // ... d'autres propriétés de style
+                //style
               ),
             ),
 
@@ -152,10 +151,10 @@ class ReservationScreen extends StatelessWidget {
                               EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           child: ListTile(
                             title: Text(
-                              'Début: ${reservation.DateDebut} - Heure: ${reservation.HeureDebut}',
+                              'Date Début: ${DateFormat('yyyy-MM-dd').format(reservation.DateDebut)} ---> Date Fin: ${DateFormat('yyyy-MM-dd').format(reservation.DateFin)} ',
                             ),
                             subtitle: Text(
-                              'Fin: ${reservation.DateFin} - Heure: ${reservation.HeureFin} | Statut: ${reservation.Statut} | Montant: ${reservation.Total}',
+                              ' Statut: ${reservation.Statut} ',
                             ),
                           ),
                         );
