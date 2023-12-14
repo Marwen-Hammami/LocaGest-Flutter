@@ -1,60 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/models/reservation.dart';
+import 'package:locagest/services/reservations_service.dart';
 
 class ReservationProvider extends ChangeNotifier {
   List<Reservation> reservations = [];
 
-  ReservationProvider() {
-    // Ajouter des réservations statiques lors de la création du provider
-    addDummyReservation(
-      dateDebut: DateTime.now(),
-      dateFin: DateTime.now().add(Duration(days: 7)),
-      heureDebut: '10:00',
-      heureFin: '12:00',
-      statut: 'Confirmé',
-      total: 150.0,
-    );
-
-    addDummyReservation(
-      dateDebut: DateTime.now().add(Duration(days: 1)),
-      dateFin: DateTime.now().add(Duration(days: 8)),
-      heureDebut: '14:00',
-      heureFin: '16:00',
-      statut: 'En attente',
-      total: 200.0,
-    );
-
-    addDummyReservation(
-      dateDebut: DateTime.now().add(Duration(days: 3)),
-      dateFin: DateTime.now().add(Duration(days: 10)),
-      heureDebut: '16:30',
-      heureFin: '18:30',
-      statut: 'Confirmé',
-      total: 180.0,
-    );
+  Future<void> init() async {
+    await loadReservations();
   }
 
-  // Ajouter une réservation avec des paramètres spécifiés
-  void addDummyReservation({
-    DateTime? dateDebut,
-    DateTime? dateFin,
-    String heureDebut = '10:00',
-    String heureFin = '12:00',
-    String statut = 'Confirmé',
-    double total = 150.0,
-  }) {
-    Reservation dummyReservation = Reservation(
-      DateDebut: dateDebut ?? DateTime.now(),
-      DateFin: dateFin ?? DateTime.now().add(Duration(days: 7)),
-      HeureDebut: heureDebut,
-      HeureFin: heureFin,
-      Statut: statut,
-      Total: total,
-    );
-
-    reservations.add(dummyReservation);
-
-    // Notifie les auditeurs que la liste de réservations a été mise à jour
-    notifyListeners();
+  // Mettez à jour la méthode pour charger les réservations à partir du service
+  Future<void> loadReservations() async {
+    try {
+      reservations = await ReservationService()
+          .getAllReservations('http://localhost:9090');
+      notifyListeners();
+    } catch (e) {
+      // Gérer les erreurs en fonction de votre cas d'utilisation
+      print('Erreur lors du chargement des réservations: $e');
+    }
   }
 }

@@ -12,7 +12,31 @@ import 'reservation_statistics_chart.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
-class ReservationScreen extends StatelessWidget {
+class ReservationScreen extends StatefulWidget {
+  @override
+  _ReservationScreenState createState() => _ReservationScreenState();
+}
+
+class _ReservationScreenState extends State<ReservationScreen> {
+  String selectedStatut = 'Toutes';
+
+  @override
+  void initState() {
+    super.initState();
+    // Appeler la méthode init du ReservationProvider au moment de l'initialisation du widget
+    context.read<ReservationProvider>().init();
+  }
+
+  List<Reservation> filterReservations(List<Reservation> reservations) {
+    if (selectedStatut == 'Toutes') {
+      return reservations;
+    } else {
+      return reservations
+          .where((reservation) => reservation.Statut == selectedStatut)
+          .toList();
+    }
+  }
+
   List<Reservation> findReservationsForDay(
       DateTime day, List<Reservation> reservations) {
     return reservations.where((reservation) {
@@ -128,13 +152,13 @@ class ReservationScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: DropdownButton<String>(
-                value: 'Toutes',
+                value: selectedStatut,
                 onChanged: (String? newValue) {
-                  // Met à jour le statut sélectionné et recharge la liste des réservations
-                  // Vous pouvez également ajouter un appel pour recharger les données en fonction du statut ici
-                  // par exemple, appel à une fonction de filtrage des réservations en fonction du statut
+                  setState(() {
+                    selectedStatut = newValue ?? 'Toutes';
+                  });
                 },
-                items: <String>['Toutes', 'Reservée', 'Payée', 'Achevée']
+                items: <String>['Toutes', 'Réservée', 'Payée', 'Achevée']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -159,15 +183,8 @@ class ReservationScreen extends StatelessWidget {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Text('Aucune réservation trouvée.');
                   } else {
-                    List<Reservation> reservations = snapshot.data!;
-                    // Filtre les réservations en fonction du statut sélectionné
-                    String selectedStatut = 'Toutes';
-                    if (selectedStatut != 'Toutes') {
-                      reservations = reservations
-                          .where((reservation) =>
-                              reservation.Statut == selectedStatut)
-                          .toList();
-                    }
+                    List<Reservation> reservations =
+                        filterReservations(snapshot.data!);
 
                     return ListView.builder(
                       itemCount: reservations.length,

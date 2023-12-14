@@ -90,7 +90,7 @@ class PieChartSample3State extends State {
               shadows: shadows,
             ),
             badgeWidget: _Badge(
-              'assets\fonts\bell.png',
+              'assets/fonts/bell.png',
               size: widgetSize,
               borderColor: AppColors.contentColorBlack,
             ),
@@ -109,7 +109,7 @@ class PieChartSample3State extends State {
               shadows: shadows,
             ),
             badgeWidget: _Badge(
-              'assets/fonts/pay-per-click.png',
+              'assets/images/eau.png',
               size: widgetSize,
               borderColor: AppColors.contentColorBlack,
             ),
@@ -139,7 +139,7 @@ class _Badge extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Colors.white,
+        // color: Colors.white,
         shape: BoxShape.circle,
         border: Border.all(
           color: borderColor,
