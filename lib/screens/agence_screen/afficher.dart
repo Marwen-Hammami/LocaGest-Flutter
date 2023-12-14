@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Agences',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Afficher(),
@@ -51,53 +51,80 @@ class _AfficherState extends State<Afficher> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agences'),
+        title: const Text(
+          'Agences',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 114, 157, 243),
       ),
-      body: Center(
-        child: FutureBuilder<List<AgenceModel.Agence>>(
-          future: agences,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Text('No data available');
-            } else {
-              return Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return AgenceGridItem(
-                          agence: snapshot.data![index],
-                          launchMapURL:
-                              launchMapURL, // Passer la référence de la méthode
-                        );
-                      },
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/back.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: FutureBuilder<List<AgenceModel.Agence>>(
+            future: agences,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Text('No data available');
+              } else {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return AgenceGridItem(
+                            agence: snapshot.data![index],
+                            launchMapURL: launchMapURL,
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Ajouter(),
-                        ),
-                      ).then((value) {
-                        setState(() {
-                          agences = AgenceService.AgenceService.fetchAgences();
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Ajouter(),
+                          ),
+                        ).then((value) {
+                          setState(() {
+                            agences =
+                                AgenceService.AgenceService.fetchAgences();
+                          });
                         });
-                      });
-                    },
-                    child: Text('Ajouter'),
-                  ),
-                  SizedBox(height: 16),
-                ],
-              );
-            }
-          },
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(
+                            255, 3, 141, 8), // Set background color to green
+                      ),
+                      child: const Text(
+                        'Ajouter',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold, // Set text to bold
+                          color: Colors.white, // Set text color to white
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 40),
+                  ],
+                );
+              }
+            },
+          ),
         ),
       ),
     );
@@ -129,7 +156,6 @@ class AgenceGridItem extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // Appeler la méthode launchMapURL de Afficher directement
                       launchMapURL(agence.latitude, agence.longitude);
                     },
                     child: const Text('Voir sur la carte'),
@@ -148,51 +174,76 @@ class AgenceGridItem extends StatelessWidget {
           },
         );
       },
-      child: Card(
-        child: ListTile(
-          title: Text(agence.agenceName),
-          subtitle: Text(agence.adresse),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Modifier(agence: agence),
+      child: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width *
+              0.7, // 90% de la largeur de l'écran
+          child: Card(
+            color: Color.fromARGB(255, 177, 158, 228),
+            child: ListTile(
+              title: Text(
+                agence.agenceName,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              subtitle: Text(
+                agence.adresse,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Modifier(agence: agence),
+                        ),
+                      ).then((value) {
+                        if (value != null && value) {
+                          AgenceService.AgenceService.fetchAgences();
+                        }
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Colors.blue,
                     ),
-                  ).then((value) {
-                    AgenceService.AgenceService.fetchAgences();
-                  });
-                },
-                child: const Text('Modifier'),
+                  ),
+                  SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () async {
+                      try {
+                        await AgenceService.AgenceService.supprimer(agence.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Agence supprimée avec succès'),
+                          ),
+                        );
+                      } catch (e) {
+                        print('Error deleting agence: $e');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Erreur lors de la suppression de l\'agence'),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await AgenceService.AgenceService.supprimer(agence.id);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Agence supprimée avec succès'),
-                      ),
-                    );
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  } catch (e) {
-                    print('Error deleting agence: $e');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content:
-                            Text('Erreur lors de la suppression de l\'agence'),
-                      ),
-                    );
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  }
-                },
-                child: const Text('Supprimer'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
