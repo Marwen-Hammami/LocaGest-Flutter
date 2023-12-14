@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/screens/User/SignIn.dart';
+import 'package:locagest/services/User_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -8,6 +9,43 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _rememberMe = false;
+  final AuthService _authService =
+      AuthService(); // Create an instance of your AuthService
+
+  void _signUp() async {
+    try {
+      // Get the values entered in the text fields
+      String username = _usernameController.text;
+      String email = _emailController.text;
+      String password = _passwordController.text;
+
+      // Call the signUpUser method from the AuthService
+      final Map<String, dynamic> signUpData = await _authService.signUpUser(
+        username,
+        email,
+        password,
+      );
+
+      // Handle successful signup
+      print('Signup successful');
+      print(signUpData);
+    } catch (error) {
+      // Handle signup error
+      print('Signup failed: $error');
+    }
+  }
+
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +79,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       height: 150,
                     ),
                     TextFormField(
+                      controller: _usernameController,
                       decoration: const InputDecoration(
-                        labelText: 'Name',
+                        labelText: 'Username',
                       ),
                     ),
                     TextFormField(
+                      controller: _emailController,
                       decoration: const InputDecoration(
                         labelText: 'Email',
                       ),
                     ),
                     TextFormField(
+                      controller: _passwordController,
                       decoration: const InputDecoration(
                         labelText: 'Password',
                       ),
@@ -77,12 +118,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        // Implement sign-up functionality
-                      },
+                      onPressed: _signUp,
                       style: ElevatedButton.styleFrom(
-                        primary: const Color.fromARGB(
-                            255, 57, 168, 58), // Change the button color to red
+                        primary: const Color.fromARGB(255, 57, 168, 58),
                       ),
                       child: const Text('Sign Up'),
                     ),

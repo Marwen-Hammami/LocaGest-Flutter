@@ -17,6 +17,8 @@ import 'package:locagest/screens/Garage/Tools/AddTools.dart';
 import 'package:locagest/providers/reservation_provider.dart';
 import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:locagest/screens/User/SignUp.dart';
+import 'package:locagest/screens/User/profile.dart';
 
 void main() {
   runApp(
@@ -52,7 +54,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
-    DashboardScreen(),
+    // DashboardScreen(),
+    UserProfile(),
+
     // Content for Agence-Skander tab // call the external file for your home screen
     Container(
       color: Colors.purple.shade100,
