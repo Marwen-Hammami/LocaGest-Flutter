@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 import 'package:locagest/screens/User/DashboardUser.dart';
 // import 'package:locagest/screens/User/FogotPassword.dart';
 // import 'package:locagest/screens/User/OtpVerify.dart';
@@ -20,6 +21,7 @@ import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:locagest/screens/User/SignUp.dart';
 import 'package:locagest/screens/User/profile.dart';
+import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 
 void main() {
   runApp(
@@ -61,14 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Content for Agence-Skander tab // call the external file for your home screen
     Afficher(),
     // Content for Flotte-Maamoun tab // call the external file for your home screen
-    Container(
-      color: Colors.red.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Flotte-Maamoun',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+
+    Accueil(),
     // Content for Reservation-Jouhayna tab // call the external file for your home screen
 
     ReservationScreen(),
