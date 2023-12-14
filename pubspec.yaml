@@ -47,6 +47,8 @@ dependencies:
   json_serializable: ^6.7.1
   syncfusion_flutter_charts: ^23.2.7
   shared_preferences: ^2.2.2
+  google_fonts: ^4.0.4
+  url_launcher: ^6.0.9  # Other dependencies...
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +65,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - images/back.jpg
     - images/logo_pdm.png
     - images/client.png
     - assets/fonts/

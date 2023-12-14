@@ -1,20 +1,21 @@
-import 'package:locagest/ressources/app_assets.dart';
-import 'package:locagest/urls.dart';
+// import 'package:locagest/ressources/app_assets.dart';
+// import 'package:locagest/urls.dart';
 
-enum ChartType { line, bar, pie, scatter, radar }
 
-extension ChartTypeExtension on ChartType {
-  String get displayName => '$simpleName Chart';
+// enum ChartType { line, bar, pie, scatter, radar }
 
-  String get simpleName => switch (this) {
-        ChartType.line => 'Line',
-        ChartType.bar => 'Bar',
-        ChartType.pie => 'Pie',
-        ChartType.scatter => 'Scatter',
-        ChartType.radar => 'Radar',
-      };
+// extension ChartTypeExtension on ChartType {
+//   String get displayName => '$simpleName Chart';
 
-  String get documentationUrl => Urls.getChartDocumentationUrl(this);
+//   String get simpleName => switch (this) {
+//         ChartType.line => 'Line',
+//         ChartType.bar => 'Bar',
+//         ChartType.pie => 'Pie',
+//         ChartType.scatter => 'Scatter',
+//         ChartType.radar => 'Radar',
+//       };
 
-  String get assetIcon => AppAssets.getChartIcon(this);
-}
+//   String get documentationUrl => Urls.getChartDocumentationUrl(this);
+
+//   String get assetIcon => AppAssets.getChartIcon(this);
+// }

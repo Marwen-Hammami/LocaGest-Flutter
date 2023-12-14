@@ -3,6 +3,7 @@ import 'package:locagest/screens/User/DashboardUser.dart';
 // import 'package:locagest/screens/User/FogotPassword.dart';
 // import 'package:locagest/screens/User/OtpVerify.dart';
 import 'package:locagest/screens/User/SignIn.dart';
+import 'package:locagest/screens/agence_screen/afficher.dart';
 // import 'package:locagest/screens/User/SignUp.dart';
 
 import 'package:locagest/screens/chat_screen/dashboard_chat.dart';
@@ -58,14 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
     UserProfile(),
 
     // Content for Agence-Skander tab // call the external file for your home screen
-    Container(
-      color: Colors.purple.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Agence-Skander',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    Afficher(),
     // Content for Flotte-Maamoun tab // call the external file for your home screen
     Container(
       color: Colors.red.shade100,
