@@ -43,9 +43,24 @@ class _ModifierState extends State<Modifier> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Modifier Agence'),
+        title: const Text(
+          'Ajouter Agence',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 114, 157, 243),
       ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/back.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
