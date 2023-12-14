@@ -24,7 +24,7 @@ class CarCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 image: DecorationImage(
-                  image: AssetImage(car.image),
+                  image: AssetImage('assets/images/Dacia_Logan.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),
