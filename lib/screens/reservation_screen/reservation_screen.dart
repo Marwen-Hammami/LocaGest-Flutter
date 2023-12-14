@@ -121,7 +121,26 @@ class ReservationScreen extends StatelessWidget {
                   color: Colors.green,
                 ),
                 cellMargin: EdgeInsets.all(4.0),
-                //style
+              ),
+            ),
+            
+            // Ajout du menu déroulant pour filtrer par statut
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DropdownButton<String>(
+                value: 'Toutes',
+                onChanged: (String? newValue) {
+                  // Met à jour le statut sélectionné et recharge la liste des réservations
+                  // Vous pouvez également ajouter un appel pour recharger les données en fonction du statut ici
+                  // par exemple, appel à une fonction de filtrage des réservations en fonction du statut
+                },
+                items: <String>['Toutes', 'Reservée', 'Payée', 'Achevée']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
             ),
 
@@ -141,6 +160,15 @@ class ReservationScreen extends StatelessWidget {
                     return Text('Aucune réservation trouvée.');
                   } else {
                     List<Reservation> reservations = snapshot.data!;
+                    // Filtre les réservations en fonction du statut sélectionné
+                    String selectedStatut = 'Toutes';
+                    if (selectedStatut != 'Toutes') {
+                      reservations = reservations
+                          .where((reservation) =>
+                              reservation.Statut == selectedStatut)
+                          .toList();
+                    }
+
                     return ListView.builder(
                       itemCount: reservations.length,
                       itemBuilder: (context, index) {
@@ -149,12 +177,20 @@ class ReservationScreen extends StatelessWidget {
                           elevation: 5,
                           margin:
                               EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: ListTile(
-                            title: Text(
-                              'Date Début: ${DateFormat('yyyy-MM-dd').format(reservation.DateDebut)} ---> Date Fin: ${DateFormat('yyyy-MM-dd').format(reservation.DateFin)} ',
-                            ),
-                            subtitle: Text(
-                              ' Statut: ${reservation.Statut} ',
+                          child: GestureDetector(
+                            onTap: () {
+                              navigateToReservationDetails(
+                                  context,
+                                  reservation.DateDebut,
+                                  context.read<ReservationProvider>());
+                            },
+                            child: ListTile(
+                              title: Text(
+                                'Date Début: ${DateFormat('yyyy-MM-dd').format(reservation.DateDebut)} ---> Date Fin: ${DateFormat('yyyy-MM-dd').format(reservation.DateFin)} ',
+                              ),
+                              subtitle: Text(
+                                ' Statut: ${reservation.Statut} ',
+                              ),
                             ),
                           ),
                         );
