@@ -1,3 +1,4 @@
+// CarService.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:locagest/models/car.dart';
@@ -13,6 +14,16 @@ class CarService {
       return List<Car>.from(list.map((model) => Car.fromJson(model)));
     } else {
       throw Exception('Échec de chargement des voitures');
+    }
+  }
+
+  Future<void> deleteCar(String immatriculation) async {
+    final response = await http.delete(Uri.parse('$baseURL/car/$immatriculation'));
+
+    if (response.statusCode == 204) {
+      // La suppression a réussi (204 signifie "No Content")
+    } else {
+      throw Exception('Échec de la suppression du véhicule');
     }
   }
 }

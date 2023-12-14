@@ -35,14 +35,14 @@ class Accueil extends StatelessWidget {
             MyCard(
               title: 'Voir les Entretiens',
               color: Colors.red,
-              imageAsset: 'images/entretien_image.png',
+              imageAsset: 'assets/images/kolleb.png',
             ),
             SizedBox(height: 20),
             // Card 3
             MyCard(
               title: 'Geolocalisation',
               color: Colors.green,
-              imageAsset: 'images/geolocalisation_image.png',
+              imageAsset: 'assets/images/localisation.png',
             ),
           ],
         ),
