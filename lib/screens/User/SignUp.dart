@@ -9,7 +9,8 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _rememberMe = false;
-  final AuthService _authService = AuthService(); // Create an instance of your AuthService
+  final AuthService _authService =
+      AuthService(); // Create an instance of your AuthService
 
   void _signUp() async {
     try {
@@ -54,7 +55,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade400, const Color.fromARGB(255, 223, 223, 227)],
+            colors: [
+              Colors.blue.shade400,
+              const Color.fromARGB(255, 223, 223, 227)
+            ],
           ),
         ),
         child: Center(
@@ -128,7 +132,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SignInScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => SignInScreen()),
                             );
                           },
                           child: const Text('Sign In'),

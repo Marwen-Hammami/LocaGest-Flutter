@@ -28,9 +28,16 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  datetime_picker_formfield: ^2.0.0
+  toast: ^0.3.0
   flutter:
     sdk: flutter
-    
+  provider: ^6.0.3
+  table_calendar: ^3.0.0
+  fl_chart: ^0.65.0
+  http: ^1.1.2
+  flutter_svg: ^2.0.7
+
 
 
 
@@ -40,8 +47,9 @@ dependencies:
   json_annotation: ^4.3.0
   json_serializable: ^6.7.1
   syncfusion_flutter_charts: ^23.2.7
-  http: ^1.1.2
   shared_preferences: ^2.2.2
+  google_fonts: ^4.0.4
+  url_launcher: ^6.0.9  # Other dependencies...
 
 dev_dependencies:
   flutter_test:
@@ -57,9 +65,18 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    - assets/images/
+    - images/back.jpg
     - images/logo_pdm.png
     - images/client.png
+    - assets/fonts/
 
+  fonts:
+    - family: Mukta-Regular
+      fonts:
+        - asset: assets/fonts/Mukta-Regular.ttf
+
+      
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -67,9 +84,6 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
- # - images/logo_pdm.png
-  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

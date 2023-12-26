@@ -1,18 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 import 'package:locagest/screens/User/DashboardUser.dart';
-import 'package:locagest/screens/User/FogotPassword.dart';
-import 'package:locagest/screens/User/OtpVerify.dart';
+// import 'package:locagest/screens/User/FogotPassword.dart';
+// import 'package:locagest/screens/User/OtpVerify.dart';
 import 'package:locagest/screens/User/SignIn.dart';
+import 'package:locagest/screens/agence_screen/afficher.dart';
+// import 'package:locagest/screens/User/SignUp.dart';
+
+import 'package:locagest/screens/chat_screen/dashboard_chat.dart';
+import 'package:locagest/screens/Garage/Distribution/AddDistribution.dart';
+import 'package:locagest/screens/Garage/Tools/AddTools.dart';
+// import 'package:locagest/screens/User/DashboardUser.dart';
+// import 'package:locagest/screens/User/FogotPassword.dart';
+// import 'package:locagest/screens/User/OtpVerify.dart';
+// import 'package:locagest/screens/User/SignIn.dart';
+// import 'package:locagest/screens/User/SignUp.dart';
+// import 'package:locagest/models/reservation.dart';
+import 'package:locagest/providers/reservation_provider.dart';
+import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:locagest/screens/User/SignUp.dart';
 import 'package:locagest/screens/User/profile.dart';
+import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ReservationProvider()),
+        // ... autres fournisseurs nécessaires
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,59 +54,72 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
+
 class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
-   // DashboardScreen(), 
-   UserProfile(),
-  
+    // DashboardScreen(),
+    UserProfile(),
+
     // Content for Agence-Skander tab // call the external file for your home screen
-    Container(
-      color: Colors.purple.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Agence-Skander',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    Afficher(),
     // Content for Flotte-Maamoun tab // call the external file for your home screen
-    Container(
-      color: Colors.red.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Flotte-Maamoun',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+
+    Accueil(),
     // Content for Reservation-Jouhayna tab // call the external file for your home screen
-    Container(
-      color: Colors.pink.shade300,
-      alignment: Alignment.center,
-      child: const Text(
-        'Reservation-Jouhayna',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+
+    ReservationScreen(),
+
+    // Container(
+    //   color: Colors.pink.shade300,
+    //   alignment: Alignment.center,
+    //   child: const Text(
+    //     'Reservation-Jouhayna',
+    //     style: TextStyle(fontSize: 40),
+    //   ),
+    // ),
     // Content for Garage-Chiheb Tab // call the external file for your home screen
-    Container(
-      color: Colors.blue.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Garage-Chiheb',
-        style: TextStyle(fontSize: 40),
+    Builder(
+      builder: (context) => Container(
+        color: Colors.blue.shade100,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Garage',
+              style: TextStyle(fontSize: 40),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddToolsScreen()),
+                );
+              },
+              child: Text("Tools"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddDistributionScreen()),
+                );
+              },
+              child: Text("Distribution"),
+            ),
+          ],
+        ),
       ),
     ),
     // Content for Chat-Marwen Tab // call the external file for your home screen
-    Container(
-      color: Colors.green.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Chat-Marwen',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    ChatResponsiveDashboard(),
   ];
 
   int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

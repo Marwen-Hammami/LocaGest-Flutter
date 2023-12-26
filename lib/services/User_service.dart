@@ -260,6 +260,34 @@ Future<List<dynamic>> getAllUsers() async {
       return false;
     }
   }
+
+  Future<void> deleteUser(String userId) async {
+  final url = '$baseUrl/delete/$userId';
+
+  try {
+    final response = await http.delete(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final deletedUser = jsonDecode(response.body);
+      print('User deleted: $deletedUser');
+    } else {
+      print('Failed to delete user. Error: ${response.statusCode}');
+    }
+  } catch (error) {
+    print('Error occurred while deleting user: $error');
+  }
+}
+  static Future<Map<String, dynamic>> calculateStatistics() async {
+    final response = await http.get(Uri.parse('$baseUrl/stat'));
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return jsonData;
+    } else {
+      throw Exception('Failed to calculate statistics. Status code: ${response.statusCode}');
+    }
+  }
+
   Future<String> newPassword(String password, String confirmPassword) async {
         final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('email');
@@ -300,30 +328,20 @@ Future<List<dynamic>> getAllUsers() async {
 }
 
 
-  static Future<Map<String, dynamic>> updateRoleByEmail(
-      String email, String newRole) async {
-    final String apiUrl = '$baseUrl/roles/$email';
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-
-    final Map<String, dynamic> body = {
-      'roles': newRole,
-    };
-
-    final String jsonBody = json.encode(body);
-
+  Future<Map<String, dynamic>> updateRoleById(
+      String userId, String newRole, String newRate) async {
     try {
-      final response = await http.put(Uri.parse(apiUrl), headers: headers, body: jsonBody);
-      final responseBody = json.decode(response.body);
+      final url = '$baseUrl/role/$userId';
+      final body = {'newRole': newRole, 'newRate': newRate};
+      final response = await http.post(Uri.parse(url), body: body);
 
       if (response.statusCode == 200) {
-        return {'success': true, 'message': 'Role updated successfully'};
+        return jsonDecode(response.body);
       } else {
-        return {'success': false, 'message': responseBody['error'] ?? 'An error occurred'};
+        throw Exception('Failed to update role and rate: ${response.body}');
       }
     } catch (error) {
-      return {'success': false, 'message': 'An error occurred: $error'};
+      throw Exception('Failed to update role and rate: $error');
     }
   }
 
