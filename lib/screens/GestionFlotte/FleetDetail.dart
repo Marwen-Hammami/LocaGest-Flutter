@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/models/car.dart';
-import 'package:locagest/services/carService.dart'; // Assurez-vous d'importer le service
-import 'package:locagest/widgets/CarCard.dart'; // Assurez-vous d'importer votre widget CarCard
+import 'package:locagest/services/carService.dart';
+import 'package:locagest/widgets/CarCard.dart';
+import 'package:locagest/screens/GestionFlotte/AddCar.dart'; // Importez votre écran AddCar
 
 class FleetDetail extends StatefulWidget {
   @override
@@ -30,6 +31,11 @@ class _FleetDetailState extends State<FleetDetail> {
     }
   }
 
+  Future<void> _refresh() async {
+    // Mettez à jour la liste des voitures
+    await fetchCars();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,13 +53,28 @@ class _FleetDetailState extends State<FleetDetail> {
         ],
       ),
       backgroundColor: Colors.lightGreen[100],
-      body: ListView.builder(
-        itemCount: cars.length,
-        itemBuilder: (context, index) {
-          return CarCard(
-            car: cars[index],
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView.builder(
+          itemCount: cars.length,
+          itemBuilder: (context, index) {
+            return CarCard(
+              car: cars[index],
+              carService: carService,
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Naviguer vers l'interface AddCar lors de l'appui sur le bouton flottant
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddCar()),
           );
         },
+        backgroundColor: Colors.green, // Couleur du bouton flottant
+        child: Icon(Icons.add), // Icône du bouton flottant
       ),
     );
   }

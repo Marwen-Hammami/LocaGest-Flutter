@@ -1,12 +1,14 @@
 // CarCard.dart
 import 'package:flutter/material.dart';
-import 'package:locagest/models/car.dart'; // Importez le modèle Car
-import 'package:locagest/screens/GestionFlotte/CarDetail.dart'; // Importez l'écran CarDetail
+import 'package:locagest/models/car.dart';
+import 'package:locagest/screens/GestionFlotte/CarDetail.dart';
+import 'package:locagest/services/carService.dart';
 
 class CarCard extends StatelessWidget {
   final Car car;
+  final CarService carService;
 
-  CarCard({required this.car});
+  CarCard({required this.car, required this.carService});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class CarCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CarDetail(car: car),
+            builder: (context) => CarDetail(car: car, carService: carService),
           ),
         );
       },
@@ -34,7 +36,7 @@ class CarCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   image: DecorationImage(
-                    image: AssetImage('assets/images/Dacia_Logan.jpg'),
+                    image: AssetImage('assets/images/Dacia_Logan.jpg'), // Utilisez car.image comme URL de l'image
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -43,7 +45,7 @@ class CarCard extends StatelessWidget {
                 height: 200,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: Colors.black.withOpacity(0.3), // Ajustez l'opacité selon vos besoins
+                  color: Colors.black.withOpacity(0.3),
                 ),
               ),
               Padding(
