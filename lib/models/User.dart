@@ -13,6 +13,7 @@ class User {
   int? experience;
   String? roles;
   bool isVerified;
+  bool isArchived;
   bool isBanned;
 
   String? token;
@@ -38,7 +39,7 @@ class User {
     this.roles = 'admin',
     this.isVerified = false,
     this.isBanned = false,
-
+    this.isArchived = false,
     this.token,
     this.resetToken,
     this.resetTokenExpiration,
@@ -63,6 +64,8 @@ class User {
       roles: json['roles'],
       isVerified: json['isVerified'],
             isBanned: json['isBanned'],
+                        isArchived: json['isArchived'],
+
 
       token: json['token'],
       resetToken: json['resetToken'],
@@ -93,7 +96,7 @@ class User {
       'roles': roles,
       'isVerified': isVerified,
             'isBanned': isBanned,
-
+'isArchived':isArchived,
       'token': token,
       'resetToken': resetToken,
       'resetTokenExpiration': resetTokenExpiration?.toIso8601String(),

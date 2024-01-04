@@ -16,6 +16,7 @@ import 'package:locagest/screens/Garage/Tools/AddTools.dart';
 // import 'package:locagest/screens/User/SignIn.dart';
 // import 'package:locagest/screens/User/SignUp.dart';
 // import 'package:locagest/models/reservation.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:locagest/providers/reservation_provider.dart';
 import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,8 @@ import 'package:locagest/screens/User/profile.dart';
 import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 
 void main() {
+    //FacebookAuth.instance.initialize();
+
   runApp(
     MultiProvider(
       providers: [
@@ -44,6 +47,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.indigo),
       home: SignInScreen(),
+      routes: {
+        '/SignIn': (context) => SignInScreen(), // Define the SignIn route
+        // Add other routes as needed
+      },
     );
   }
 }
@@ -125,6 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("LocaGest"),
+        automaticallyImplyLeading: false, // Add this line to remove the back button
+
       ),
       bottomNavigationBar: MediaQuery.of(context).size.width < 640
           ? BottomNavigationBar(

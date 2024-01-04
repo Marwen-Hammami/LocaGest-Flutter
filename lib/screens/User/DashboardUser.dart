@@ -11,6 +11,8 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   List<User> users = [];
+  List<User> displayedUsers = []; // List for displaying users after search
+  String searchQuery = ''; // Search query
 
   AuthService userService = AuthService(); // Initialize the AuthService
 
@@ -19,6 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     fetchUsers();
   }
+  
 
   void fetchUsers() {
     userService.getAllUsers().then((fetchedUsers) {
@@ -28,18 +31,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
         id: user['id'],
         email: user['email'],
         roles: user['roles'],
+        
       ))
   .toList();
+   displayedUsers = users; 
 
       });
     }).catchError((error) {
       print('Failed to fetch users: $error');
     });
   }
+   void searchUser(String query) {
+    final filteredUsers = users.where((user) {
+      final userEmailLower = user.email!.toLowerCase();
+      final searchLower = query.toLowerCase();
+
+      return userEmailLower.contains(searchLower);
+    }).toList();
+
+    setState(() {
+      searchQuery = query;
+      displayedUsers = filteredUsers;
+    });
+  }
+  void sortUsersByEmail() {
+    setState(() {
+      displayedUsers.sort((a, b) => a.email!.compareTo(b.email!));
+    });
+  }
 
  void banUser(User user) async {
   try {
-    final response = await userService.banUser(user.id ?? '');
+    final response = await userService.banUser(user.id ?? '', '');
     print('User banned: ${user.email}');
     print('Response: $response');
     // Handle the response as needed
@@ -101,13 +124,32 @@ void UnBanUser(User user) async {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return Scaffold(
+      appBar: AppBar(
+        title: Text("Dashboard"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: sortUsersByEmail,
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: searchUser,
+                decoration: InputDecoration(
+                  labelText: "Search Users",
+                  suffixIcon: Icon(Icons.search),
+                ),
+              ),
+            ),
             UserProfileSection(
-              users: users,
+              users: displayedUsers,
               editUser: editUser,
               banUser: banUser
                           ),
@@ -172,7 +214,7 @@ class UserProfileSection extends StatelessWidget {
               'No users found',
               style: TextStyle(
                 fontSize: 18.0,
-                color: Colors.white,
+                color: Color.fromARGB(255, 253, 253, 253),
               ),
             )
           : ListView.builder(
@@ -208,65 +250,64 @@ class UserProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 20.0),
-      color: Colors.white,
-      child: ListTile(
-        leading: CircleAvatar(
-          radius: 30.0,
-          backgroundImage: AssetImage(user.image ?? 'images/client.png'),
+      print('User isArchived: ${user.isArchived}');
+
+  return Card(
+    margin: EdgeInsets.only(bottom: 20.0),
+    color: user.isArchived ? Colors.grey : Colors.white,
+    child: ListTile(
+      leading: CircleAvatar(
+        radius: 30.0,
+        backgroundImage: AssetImage(user.image ?? 'images/client.png'),
+      ),
+
+      title: Text(
+        user.email ?? '',
+        style: TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
         ),
-        
-        title: Text(
-          user.email ?? '',
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
+      ),
+      subtitle: Text(
+        user.roles ?? '',
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            color: Colors.red,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Delete User'),
+                    content: Text('Are you sure you want to delete this user?'),
+                    actions: [
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Delete'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          AuthService().archiveUser(id);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
-        ),
-        subtitle: Text(
-          user.roles ?? '',
-          style: TextStyle(
-            fontSize: 14.0,
-          ),
-          
-        ),
-       
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: Icon(Icons.delete),
-              color: Colors.red,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Delete User'),
-                      content:
-                          Text('Are you sure you want to delete this user?'),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Delete'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            // Call delete function here
-                            AuthService().deleteUser(id);
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
             IconButton(
               icon: Icon(Icons.edit),
               color: Colors.blue,
@@ -334,16 +375,29 @@ class UserProfileCard extends StatelessWidget {
                 );
               },
             ),
-            IconButton(
+           IconButton(
   icon: Icon(Icons.block),
   color: Colors.orange,
   onPressed: () async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        String banMessage = ''; // Initialize the ban message variable
         return AlertDialog(
           title: Text('Ban User'),
-          content: Text('Are you sure you want to ban this user?'),
+          content: Column(
+            children: [
+              Text('Are you sure you want to ban this user?'),
+              TextField(
+                onChanged: (value) {
+                  banMessage = value; // Update the ban message as the user types
+                },
+                decoration: InputDecoration(
+                  labelText: 'Ban Message',
+                ),
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               child: Text('Cancel'),
@@ -357,7 +411,8 @@ class UserProfileCard extends StatelessWidget {
                 Navigator.of(context).pop();
                 try {
                   print('User ID to ban: $id');
-                  await AuthService().banUser(id);
+                  print('Ban Message: $banMessage'); // Print the ban message
+                  await AuthService().banUser(id, banMessage); // Pass the ban message to the banUser function
                   print('User banned: ${user.email}');
                 } catch (error) {
                   print('Failed to ban user: $error');
@@ -371,27 +426,31 @@ class UserProfileCard extends StatelessWidget {
   },
 ),
 
-            IconButton(
-              icon: Icon(Icons.restore),
-              color: Colors.green,
+           IconButton(
+  icon: Icon(Icons.restore),
+  color: Colors.green,
+  onPressed: () {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Unban User'),
+          content: Column(
+            children: [
+              Text('Are you sure you want to unban this user or undo a delete ?'),
+              
+            ]
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Unban User'),
-                      content:
-                          Text('Are you sure you want to unban this user?'),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Unban'),
-onPressed: () async {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Unban'),
+              onPressed: () async {
                 Navigator.of(context).pop();
                 try {
                   print('User ID to unban: $id');
@@ -401,57 +460,64 @@ onPressed: () async {
                   print('Failed to unban user: $error');
                 }
               },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
             ),
-            IconButton(
-              icon: Icon(Icons.access_time),
-              color: Colors.purple,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    TextEditingController timeController =
-                        TextEditingController();
+          ],
+        );
+      },
+    );
+  },
+),IconButton(
+  icon: Icon(Icons.access_time),
+  color: Colors.purple,
+  onPressed: () {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController timeController = TextEditingController();
+        TextEditingController messageController = TextEditingController(); // Add the TextEditingController for banMessage
 
-                    return AlertDialog(
-                      title: Text('Set Ban Time'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Set ban time in days:'),
-                          TextField(
-                            controller: timeController,
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Ban'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            final banDuration =
-                                int.tryParse(timeController.text) ?? 0;
-                           AuthService().banUserWithDuration(id, banDuration); // Call the banUserWithDuration function from the service
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
+        return AlertDialog(
+          title: Text('Set Ban Time'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Set ban time in days:'),
+              TextField(
+                controller: timeController,
+                keyboardType: TextInputType.number,
+              ),
+              SizedBox(height: 10), // Add some spacing
+              Text('Ban Message:'), // Add a label for the ban message
+              TextField(
+                controller: messageController,
+                decoration: InputDecoration(
+                  hintText: 'Enter ban message',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
+            TextButton(
+              child: Text('Ban'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                final banDuration = int.tryParse(timeController.text) ?? 0;
+                final banMessage = messageController.text; // Get the ban message from the text field
+                AuthService().banUserWithDuration(id, banDuration, banMessage); // Call the banUserWithDuration function with banMessage
+              },
+            ),
+          ],
+        );
+      },
+    );
+  },
+),
           ],
         ),
       ),
@@ -491,7 +557,7 @@ class StatisticsSection extends StatelessWidget {
               StatCard(
                 icon: Icons.attach_money,
                 label: 'Revenue',
-                value: '\$10,000',
+                value: '',
               ),
               FutureBuilder<int>(
                 future: userService.getUserCount(),

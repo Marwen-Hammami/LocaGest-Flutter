@@ -35,6 +35,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  void _returnToPreviousPage() {
+    Navigator.pop(context);
+  }
+
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -50,6 +54,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sign Up'),
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -122,39 +129,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       style: ElevatedButton.styleFrom(
                         primary: const Color.fromARGB(255, 57, 168, 58),
                       ),
-                      child: const Text('Sign Up'),
+                      child: const Text('Create new profile'),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Already have an account?'),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInScreen()),
-                            );
-                          },
-                          child: const Text('Sign In'),
-                        ),
-                      ],
+                    ElevatedButton(
+                      onPressed: _returnToPreviousPage,
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.grey,
+                      ),
+                      child: const Text('Return to Previous Page'),
                     ),
-                    const Divider(),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Implement Google sign-up functionality
-                      },
-                      icon: const Icon(Icons.g_translate),
-                      label: const Text('Sign Up with Google'),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Implement Facebook sign-up functionality
-                      },
-                      icon: const Icon(Icons.facebook),
-                      label: const Text('Sign Up with Facebook'),
-                    ),
+                    // ... your existing code
                   ],
                 ),
               ),

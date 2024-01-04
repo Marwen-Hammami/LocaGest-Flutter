@@ -113,20 +113,20 @@ Future<Map<String, dynamic>> updateUser({
     throw Exception('Failed to update user: $error');
   }
 }
-Future<Map<String, dynamic>> banUser(String userId) async {
-    try {
-      final url = '$baseUrl/banUser/$userId';
-      final response = await http.post(Uri.parse(url));
-      
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Failed to ban user: ${response.body}');
-      }
-    } catch (error) {
-      throw Exception('Failed to ban user: $error');
+Future<Map<String, dynamic>> banUser(String userId, String banMessage) async {
+  try {
+    final url = '$baseUrl/banUser/$userId';
+    final response = await http.post(Uri.parse(url), body: {'banMessage': banMessage});
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to ban user: ${response.body}');
     }
+  } catch (error) {
+    throw Exception('Failed to ban user: $error');
   }
+}
 
   Future<Map<String, dynamic>> unbanUser(String userId) async {
     try {
@@ -142,22 +142,56 @@ Future<Map<String, dynamic>> banUser(String userId) async {
       throw Exception('Failed to unban user: $error');
     }
   }
-
-  Future<Map<String, dynamic>> banUserWithDuration(String userId, int duration) async {
+   Future<void> logout() async {
     try {
-      final url = '$baseUrl/banUserWithDuration/$userId';
-      final body = {'duration': duration.toString()};
-      final response = await http.post(Uri.parse(url), body: body);
-      
+      final response = await http.get(Uri.parse('$baseUrl/logout'));
+
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        // Logout successful
+        print('Logout successful');
       } else {
-        throw Exception('Failed to ban user with duration: ${response.body}');
+        // Error occurred during logout
+        print('Error during logout: ${response.statusCode}');
       }
     } catch (error) {
-      throw Exception('Failed to ban user with duration: $error');
+      // Error occurred while making the request
+      print('Error during logout: $error');
     }
   }
+Future<void> archiveUser(String userId) async {
+  try {
+    final url = Uri.parse('$baseUrl/archive/$userId');
+    final response = await http.post(url);
+
+    if (response.statusCode == 200) {
+      // User archived successfully
+      print('User archived successfully');
+    } else if (response.statusCode == 404) {
+      // User not found
+      print('User not found');
+    } else {
+      // Other error occurred
+      print('Failed to archive user');
+    }
+  } catch (error) {
+    print('Error: $error');
+  }
+}
+ Future<Map<String, dynamic>> banUserWithDuration(String userId, int duration, String banMessage) async {
+  try {
+    final url = '$baseUrl/banUserWithDuration/$userId';
+    final body = {'duration': duration.toString(), 'banMessage': banMessage};
+    final response = await http.post(Uri.parse(url), body: body);
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to ban user with duration: ${response.body}');
+    }
+  } catch (error) {
+    throw Exception('Failed to ban user with duration: $error');
+  }
+}
 Future<User> getUserFromId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('userId'); // Retrieve the user ID from shared preferences
