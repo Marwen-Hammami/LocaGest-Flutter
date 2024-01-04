@@ -16,7 +16,7 @@ import 'package:locagest/screens/Garage/Tools/AddTools.dart';
 // import 'package:locagest/screens/User/SignIn.dart';
 // import 'package:locagest/screens/User/SignUp.dart';
 // import 'package:locagest/models/reservation.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
 import 'package:locagest/providers/reservation_provider.dart';
 import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +25,6 @@ import 'package:locagest/screens/User/profile.dart';
 import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 
 void main() {
-    //FacebookAuth.instance.initialize();
 
   runApp(
     MultiProvider(
