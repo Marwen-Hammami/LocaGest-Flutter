@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:locagest/main.dart';
 import 'package:locagest/screens/User/FogotPassword.dart';
-import 'package:locagest/screens/User/SignUp.dart';
 import 'package:locagest/services/User_service.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
   _SignInScreenState createState() => _SignInScreenState();
-  
 }
 
 class _SignInScreenState extends State<SignInScreen> {
@@ -16,6 +15,35 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController _passwordController = TextEditingController();
   AuthService _authService = AuthService(); // Initialize the AuthService
 
+
+Future<void> _loginWithFacebook() async {
+    try {
+      final result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        final userData = await FacebookAuth.instance.getUserData();
+        // Use the userData or perform any necessary actions
+      } else {
+        // Handle Facebook login error
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Facebook Login Failed'),
+            content: Text(result.message ?? 'Unknown error'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print('Error during Facebook login: $e');
+    }
+  }
   Future<void> _signIn() async {
     final email = _emailController.text;
     final password = _passwordController.text;
@@ -124,23 +152,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       child: Text('Sign In'),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Don\'t have an account?'),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SignUpScreen(),
-                              ),
-                            );
-                          },
-                          child: Text('Sign Up'),
-                        ),
-                      ],
-                    ),
                     Divider(),
                     ElevatedButton.icon(
                       onPressed: () {
@@ -150,9 +161,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       label: Text('Sign In with Google'),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        // Implement Facebook sign-in functionality
-                      },
+                      onPressed: _loginWithFacebook,
                       icon: Icon(Icons.facebook),
                       label: Text('Sign In with Facebook'),
                     ),

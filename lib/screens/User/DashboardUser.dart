@@ -11,6 +11,8 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   List<User> users = [];
+  List<User> displayedUsers = []; // List for displaying users after search
+  String searchQuery = ''; // Search query
 
   AuthService userService = AuthService(); // Initialize the AuthService
 
@@ -19,30 +21,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     fetchUsers();
   }
+  
 
   void fetchUsers() {
     userService.getAllUsers().then((fetchedUsers) {
       setState(() {
         users = fetchedUsers
-            .map((user) => User(email: user['email'], roles: user['roles']))
-            .toList();
+  .map((user) => User(
+        id: user['id'],
+        email: user['email'],
+        roles: user['roles'],
+        
+      ))
+  .toList();
+   displayedUsers = users; 
+
       });
     }).catchError((error) {
       print('Failed to fetch users: $error');
     });
   }
+   void searchUser(String query) {
+    final filteredUsers = users.where((user) {
+      final userEmailLower = user.email!.toLowerCase();
+      final searchLower = query.toLowerCase();
 
-  void banUser(User user) async {
-    try {
-      final response = await userService.banUser(user.id ?? '');
-      print('User banned: ${user.username}');
-      print('Response: $response');
-      // Handle the response as needed
-    } catch (error) {
-      print('Failed to ban user: $error');
-      // Handle the error accordingly
-    }
+      return userEmailLower.contains(searchLower);
+    }).toList();
+
+    setState(() {
+      searchQuery = query;
+      displayedUsers = filteredUsers;
+    });
   }
+  void sortUsersByEmail() {
+    setState(() {
+      displayedUsers.sort((a, b) => a.email!.compareTo(b.email!));
+    });
+  }
+
+ void banUser(User user) async {
+  try {
+    final response = await userService.banUser(user.id ?? '', '');
+    print('User banned: ${user.email}');
+    print('Response: $response');
+    // Handle the response as needed
+  } catch (error) {
+    print('Failed to ban user: $error');
+    // Handle the error accordingly
+  }
+}
+void UnBanUser(User user) async {
+  try {
+    final response = await userService.unbanUser(user.id ?? '');
+    print('User Unbanned: ${user.email}');
+    print('Response: $response');
+    // Handle the response as needed
+  } catch (error) {
+    print('Failed to Unban user: $error');
+    // Handle the error accordingly
+  }
+}
+
 
   void addUser(User user) {
     setState(() {
@@ -62,14 +102,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (index != -1) {
         users[index] = newUser;
         final updatedUser = users[index];
-        AuthService.updateRoleByEmail(
-                updatedUser.email ?? '', updatedUser.roles ?? '')
+       // final userService = UserService();
+        userService
+            .updateRoleById(updatedUser.id ?? '', updatedUser.roles ?? '',
+                updatedUser.rate ?? '')
             .then((result) {
           if (result['success']) {
-            print(result['success']); // Role updated successfully
+            print(result['message']); // Role updated successfully
             // Handle success
           } else {
-            print(result['error']); // Error message
+            print(result['message']); // Error message
             // Handle error
           }
         }).catchError((error) {
@@ -82,16 +124,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return Scaffold(
+      appBar: AppBar(
+        title: Text("Dashboard"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: sortUsersByEmail,
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            UserProfileSection(
-              users: users,
-              editUser: editUser,
-              banUser: banUser, // Pass the banUser function
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: searchUser,
+                decoration: InputDecoration(
+                  labelText: "Search Users",
+                  suffixIcon: Icon(Icons.search),
+                ),
+              ),
             ),
+            UserProfileSection(
+              users: displayedUsers,
+              editUser: editUser,
+              banUser: banUser
+                          ),
             SizedBox(height: 20.0),
             StatisticsSection(),
             SizedBox(height: 20.0),
@@ -134,10 +195,12 @@ class UserProfileSection extends StatelessWidget {
   final Function(User, User) editUser;
   final Function(User) banUser;
 
+
   UserProfileSection({
     required this.users,
     required this.editUser,
     required this.banUser,
+
   });
 
   @override
@@ -151,7 +214,7 @@ class UserProfileSection extends StatelessWidget {
               'No users found',
               style: TextStyle(
                 fontSize: 18.0,
-                color: Colors.white,
+                color: Color.fromARGB(255, 253, 253, 253),
               ),
             )
           : ListView.builder(
@@ -159,132 +222,151 @@ class UserProfileSection extends StatelessWidget {
               itemBuilder: (context, index) {
                 final user = users[index];
                 return UserProfileCard(
-                    user: user, editUser: editUser, banUser: banUser);
+                  user: user,
+                  editUser: editUser,
+                  banUser: banUser,
+                  id: user.id ?? '', // Pass the id to UserProfileCard
+                );
               },
             ),
     );
   }
 }
 
+
 class UserProfileCard extends StatelessWidget {
   final User user;
   final Function(User, User) editUser;
   final Function(User) banUser; // Add banUser function
+  final String id; // Add id parameter
 
   UserProfileCard({
     required this.user,
     required this.editUser,
-    required this.banUser, // Add banUser parameter
+    required this.banUser, 
+     required this.id, // Add id parameter
+
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 20.0),
-      color: Colors.white,
-      child: ListTile(
-        leading: CircleAvatar(
-          radius: 30.0,
-          backgroundImage: AssetImage(user.image ?? 'images/client.png'),
+      print('User isArchived: ${user.isArchived}');
+
+  return Card(
+    margin: EdgeInsets.only(bottom: 20.0),
+    color: user.isArchived ? Colors.grey : Colors.white,
+    child: ListTile(
+      leading: CircleAvatar(
+        radius: 30.0,
+        backgroundImage: AssetImage(user.image ?? 'images/client.png'),
+      ),
+
+      title: Text(
+        user.email ?? '',
+        style: TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
         ),
-        title: Text(
-          user.email ?? '',
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
+      ),
+      subtitle: Text(
+        user.roles ?? '',
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            color: Colors.red,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Delete User'),
+                    content: Text('Are you sure you want to delete this user?'),
+                    actions: [
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Delete'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          AuthService().archiveUser(id);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
-        ),
-        subtitle: Text(
-          user.roles ?? '',
-          style: TextStyle(
-            fontSize: 14.0,
-          ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: Icon(Icons.delete),
-              color: Colors.red,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Delete User'),
-                      content:
-                          Text('Are you sure you want to delete this user?'),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Delete'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            // Call delete function here
-                            // deleteUser(user);
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
             IconButton(
               icon: Icon(Icons.edit),
               color: Colors.blue,
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    TextEditingController nameController =
-                        TextEditingController(text: user.email);
-                    TextEditingController roleController =
-                        TextEditingController(text: user.roles);
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      TextEditingController nameController =
+          TextEditingController(text: user.email);
+      TextEditingController roleController =
+          TextEditingController(text: user.roles);
+      TextEditingController rateController =
+          TextEditingController(text: user.rate);
 
-                    return AlertDialog(
-                      title: Text('Edit User'),
-                      content: Column(
-                        children: [
-                          TextField(
-                            controller: nameController,
-                            decoration: InputDecoration(labelText: 'email'),
-                          ),
-                          TextField(
-                            controller: roleController,
-                            decoration: InputDecoration(labelText: 'roles'),
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Save'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
+      return AlertDialog(
+        title: Text('Edit User'),
+        content: Column(
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'email'),
+            ),
+            TextField(
+              controller: roleController,
+              decoration: InputDecoration(labelText: 'roles'),
+            ),
+            TextField(
+              controller: rateController,
+              decoration: InputDecoration(labelText: 'rate'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('Save'),
+            onPressed: () {
+              Navigator.of(context).pop();
 
-                            // Retrieve the updated values from the text controllers
-                            final updatedUsername = nameController.text;
-                            final updatedRoles = roleController.text;
+              // Retrieve the updated values from the text controllers
+              final updatedUsername = nameController.text;
+              final updatedRoles = roleController.text;
+              final updatedRates = rateController.text;
 
-                            // Create a new User object with updated values
-                            final newUser = User(
-                              email: updatedUsername,
-                              roles: updatedRoles,
-                            );
+              // Create a new User object with updated values
+              final newUser = User(
+                id: id, // Pass the id of the user
+                email: updatedUsername,
+                roles: updatedRoles,
+                rate: updatedRates,
+              );
 
-                            // Call the editUser function to update the user
-                            editUser(user, newUser);
+              // Call the editUser function to update the user
+              editUser(user, newUser);
                           },
                         ),
                       ],
@@ -293,111 +375,149 @@ class UserProfileCard extends StatelessWidget {
                 );
               },
             ),
-            IconButton(
-              icon: Icon(Icons.block),
-              color: Colors.orange,
+           IconButton(
+  icon: Icon(Icons.block),
+  color: Colors.orange,
+  onPressed: () async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String banMessage = ''; // Initialize the ban message variable
+        return AlertDialog(
+          title: Text('Ban User'),
+          content: Column(
+            children: [
+              Text('Are you sure you want to ban this user?'),
+              TextField(
+                onChanged: (value) {
+                  banMessage = value; // Update the ban message as the user types
+                },
+                decoration: InputDecoration(
+                  labelText: 'Ban Message',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Ban User'),
-                      content: Text('Are you sure you want to ban this user?'),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Ban'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            // userService.banUser(user); // Call the banUser function from the service
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
+                Navigator.of(context).pop();
               },
             ),
-            IconButton(
-              icon: Icon(Icons.restore),
-              color: Colors.green,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Unban User'),
-                      content:
-                          Text('Are you sure you want to unban this user?'),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Unban'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            //  unbanUser(user); // Call the unbanUser function from the service
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
+            TextButton(
+              child: Text('Ban'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  print('User ID to ban: $id');
+                  print('Ban Message: $banMessage'); // Print the ban message
+                  await AuthService().banUser(id, banMessage); // Pass the ban message to the banUser function
+                  print('User banned: ${user.email}');
+                } catch (error) {
+                  print('Failed to ban user: $error');
+                }
               },
             ),
-            IconButton(
-              icon: Icon(Icons.access_time),
-              color: Colors.purple,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    TextEditingController timeController =
-                        TextEditingController();
+          ],
+        );
+      },
+    );
+  },
+),
 
-                    return AlertDialog(
-                      title: Text('Set Ban Time'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Set ban time in minutes:'),
-                          TextField(
-                            controller: timeController,
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Ban'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            final banDuration =
-                                int.tryParse(timeController.text) ?? 0;
-                            //banUserWithDuration(user, banDuration); // Call the banUserWithDuration function from the service
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
+           IconButton(
+  icon: Icon(Icons.restore),
+  color: Colors.green,
+  onPressed: () {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Unban User'),
+          content: Column(
+            children: [
+              Text('Are you sure you want to unban this user or undo a delete ?'),
+              
+            ]
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
+            TextButton(
+              child: Text('Unban'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  print('User ID to unban: $id');
+                  await AuthService().unbanUser(id);
+                  print('User unbanned: ${user.email}');
+                } catch (error) {
+                  print('Failed to unban user: $error');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  },
+),IconButton(
+  icon: Icon(Icons.access_time),
+  color: Colors.purple,
+  onPressed: () {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController timeController = TextEditingController();
+        TextEditingController messageController = TextEditingController(); // Add the TextEditingController for banMessage
+
+        return AlertDialog(
+          title: Text('Set Ban Time'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Set ban time in days:'),
+              TextField(
+                controller: timeController,
+                keyboardType: TextInputType.number,
+              ),
+              SizedBox(height: 10), // Add some spacing
+              Text('Ban Message:'), // Add a label for the ban message
+              TextField(
+                controller: messageController,
+                decoration: InputDecoration(
+                  hintText: 'Enter ban message',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Ban'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                final banDuration = int.tryParse(timeController.text) ?? 0;
+                final banMessage = messageController.text; // Get the ban message from the text field
+                AuthService().banUserWithDuration(id, banDuration, banMessage); // Call the banUserWithDuration function with banMessage
+              },
+            ),
+          ],
+        );
+      },
+    );
+  },
+),
           ],
         ),
       ),
@@ -437,7 +557,7 @@ class StatisticsSection extends StatelessWidget {
               StatCard(
                 icon: Icons.attach_money,
                 label: 'Revenue',
-                value: '\$10,000',
+                value: '',
               ),
               FutureBuilder<int>(
                 future: userService.getUserCount(),
@@ -515,7 +635,20 @@ class StatCard extends StatelessWidget {
   }
 }
 
-class CreativeSection extends StatelessWidget {
+class CreativeSection extends StatefulWidget {
+  @override
+  _CreativeSectionState createState() => _CreativeSectionState();
+}
+
+class _CreativeSectionState extends State<CreativeSection> {
+  late Future<Map<String, dynamic>> _statistics;
+
+  @override
+  void initState() {
+    super.initState();
+    _statistics = AuthService.calculateStatistics(); // Call the method to fetch statistics
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -532,42 +665,58 @@ class CreativeSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20.0),
-          Container(
-            height: 200.0,
-            child: SfCartesianChart(
-              primaryXAxis: CategoryAxis(),
-              series: <ChartSeries>[
-                ColumnSeries<OrdinalSales, String>(
-                  dataSource: [
-                    OrdinalSales('Jan', 5),
-                    OrdinalSales('Feb', 25),
-                    OrdinalSales('Mar', 100),
-                    OrdinalSales('Apr', 75),
+          FutureBuilder<Map<String, dynamic>>(
+            future: _statistics,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final statistics = snapshot.data;
+                final dataSource = <OrdinalSales>[
+                  OrdinalSales('BAD', statistics?['badCount']),
+                  OrdinalSales('AVERAGE', statistics?['averageCount']),
+                  OrdinalSales('GOOD', statistics?['goodCount']),
+                ];
+                return Column(
+                  children: [
+                    Container(
+                      height: 200.0,
+                      child: SfCartesianChart(
+                        primaryXAxis: CategoryAxis(),
+                        series: <ChartSeries>[
+                          ColumnSeries<OrdinalSales, String>(
+                            dataSource: dataSource,
+                            xValueMapper: (OrdinalSales sales, _) => sales.month,
+                            yValueMapper: (OrdinalSales sales, _) => sales.sales,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20.0),
+                    Container(
+                      width: double.infinity,
+                      height: 100.0,
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Creative Widget',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
-                  xValueMapper: (OrdinalSales sales, _) => sales.month,
-                  yValueMapper: (OrdinalSales sales, _) => sales.sales,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 20.0),
-          Container(
-            width: double.infinity,
-            height: 100.0,
-            decoration: BoxDecoration(
-              color: Colors.orange,
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Center(
-              child: Text(
-                'Creative Widget',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error occurred while calculating statistics: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
           ),
         ],
       ),
