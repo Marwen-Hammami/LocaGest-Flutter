@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/screens/GestionFlotte/FleetDetail.dart';
+import 'package:locagest/screens/GestionFlotte/EntretienHome.dart';
+
 
 
 
@@ -32,10 +34,18 @@ class Accueil extends StatelessWidget {
             ),
             SizedBox(height: 20),
             // Card 2
-            MyCard(
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EntretienHome()),
+                );
+                },
+            child:MyCard(
               title: 'Voir les Entretiens',
               color: Colors.red,
               imageAsset: 'assets/images/kolleb.png',
+            ),
             ),
             SizedBox(height: 20),
             // Card 3
