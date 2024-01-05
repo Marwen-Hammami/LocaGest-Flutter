@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:locagest/models/reservation.dart';
-import 'package:locagest/services/reservations_service.dart';
 
 class ReservationProvider extends ChangeNotifier {
   List<Reservation> reservations = [];
+  String _selectedStatut = 'Toutes';
 
-  Future<void> init() async {
-    await loadReservations();
+  String get selectedStatut => _selectedStatut;
+
+  void updateSelectedStatut(String newStatut) {
+    _selectedStatut = newStatut;
+    notifyListeners();
   }
 
-  // Mettez à jour la méthode pour charger les réservations à partir du service
-  Future<void> loadReservations() async {
-    try {
-      reservations = await ReservationService()
-          .getAllReservations('http://localhost:9090');
-      notifyListeners();
-    } catch (e) {
-      // Gérer les erreurs en fonction de votre cas d'utilisation
-      print('Erreur lors du chargement des réservations: $e');
-    }
+
+  // Ajouter une réservation avec des paramètres spécifiés
+  void addReservation({
+    required DateTime dateDebut,
+    required DateTime dateFin,
+    required String heureDebut,
+    required String heureFin,
+    required String statut,
+    required double total,
+  }) {
+    Reservation newReservation = Reservation(
+      DateDebut: dateDebut,
+      DateFin: dateFin,
+      HeureDebut: heureDebut,
+      HeureFin: heureFin,
+      Statut: statut,
+      Total: total,
+    );
+
+    reservations.add(newReservation);
+
+    // Notifie les auditeurs que la liste de réservations a été mise à jour
+    notifyListeners();
   }
 }

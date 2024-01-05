@@ -1,6 +1,8 @@
 import 'package:locagest/ressources/app_ressources.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:locagest/ressources/app_colors.dart';
 
 class LineChart1 extends StatelessWidget {

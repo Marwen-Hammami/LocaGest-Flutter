@@ -12,8 +12,8 @@ class LineChartSample2 extends StatefulWidget {
 
 class _LineChartSample2State extends State<LineChartSample2> {
   List<Color> gradientColors = [
-    Color.fromARGB(255, 216, 197, 237),
-    Color.fromARGB(255, 154, 114, 203),
+    const Color.fromARGB(255, 216, 197, 237),
+    const Color.fromARGB(255, 154, 114, 203),
   ];
 
   bool showAvg = false;
@@ -39,18 +39,16 @@ class _LineChartSample2State extends State<LineChartSample2> {
         SizedBox(
           width: 60,
           height: 34,
-          child: TextButton(
+          child: IconButton(
             onPressed: () {
               setState(() {
                 showAvg = !showAvg;
               });
             },
-            child: Text(
-              'avg',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
-              ),
+            icon: const Icon(
+              Icons.refresh,
+              size: 20, // Ajustez la taille selon vos besoins
+              color: Color.fromARGB(255, 7, 0, 0),
             ),
           ),
         ),
@@ -69,7 +67,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         text = const Text('JAN', style: style);
         break;
       case 2:
-        text = const Text('MARS', style: style);
+        text = const Text('MS', style: style);
         break;
       case 4:
         text = const Text('MAI', style: style);
@@ -86,7 +84,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       case 10:
         text = const Text('NOV', style: style);
         break;
-      
+
       default:
         text = const Text('', style: style);
         break;
@@ -174,7 +172,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       ),
       borderData: FlBorderData(
         show: true,
-        border: Border.all(color: Color.fromARGB(208, 211, 104, 191)),
+        border: Border.all(color: const Color.fromARGB(208, 211, 104, 191)),
       ),
       minX: 0,
       maxX: 11,

@@ -19,20 +19,19 @@ import 'package:locagest/screens/Garage/Tools/AddTools.dart';
 import 'package:locagest/providers/reservation_provider.dart';
 import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
 import 'package:provider/provider.dart';
+
 import 'package:locagest/screens/User/SignUp.dart';
 import 'package:locagest/screens/User/profile.dart';
 import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ReservationProvider()),
-        // ... autres fournisseurs nécessaires
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => ReservationProvider()),
+      // ... autres fournisseurs nécessaires
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
