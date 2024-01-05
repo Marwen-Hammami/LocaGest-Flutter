@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'agence.dart';
 
 class AgenceService {
-  static const String baseUrl = 'http://localhost:9090';
+  static const String baseUrl = 'https://locagest.onrender.com';
 
   static Future<List<Agence>> fetchAgences() async {
     final Uri url = Uri.parse('$baseUrl/agence');
