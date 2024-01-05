@@ -5,7 +5,7 @@ import 'package:locagest/models/User.dart';
 
 
   class AuthService {
-    static const String baseUrl = 'http://localhost:9090/User'; // Replace with your Node.js API URL
+    static const String baseUrl = 'https://locagest.onrender.com/User'; // Replace with your Node.js API URL
 
     Future<Map<String, dynamic>> signInUser(String email, String password) async {
       final url = Uri.parse('$baseUrl/signingA');

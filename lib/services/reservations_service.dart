@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:locagest/models/reservation.dart';
 
 class ReservationService {
-  static const String baseURL = 'http://localhost:9090';
+  static const String baseURL = 'https://locagest.onrender.com';
 
   Future<List<Reservation>> getAllReservations(String url) async {
     final response = await http.get(Uri.parse('$url/res'));

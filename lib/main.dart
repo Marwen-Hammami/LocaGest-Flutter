@@ -30,7 +30,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ReservationProvider()),
+        ChangeNotifierProvider(create: (context) => ReservationProvider()),
         // ... autres fournisseurs nécessaires
       ],
       child: const MyApp(),

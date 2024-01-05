@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:locagest/models/BannedWord.dart';
 
 class BannedWordService {
-  final String baseUrl = "http://localhost:9090/bannedWords/";
+  final String baseUrl = "https://locagest.onrender.com/bannedWords/";
 
   Future<BannedWord?> createBannedWord(String word) async {
     final response = await http.post(
