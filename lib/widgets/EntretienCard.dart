@@ -1,25 +1,24 @@
-// CarCard.dart
 import 'package:flutter/material.dart';
-import 'package:locagest/models/car.dart';
-import 'package:locagest/screens/GestionFlotte/CarDetail.dart';
-import 'package:locagest/services/carService.dart';
+import 'package:locagest/models/historiqueentrentien.dart';
+import 'package:locagest/services/entretienService.dart';
 
-class CarCard extends StatelessWidget {
-  final Car car;
-  final CarService carService;
+class EntretienCard extends StatelessWidget {
+  final HistoriqueEntretien entretien;
+  final EntretienService entretienService;
 
-  CarCard({required this.car, required this.carService});
+  EntretienCard({required this.entretien, required this.entretienService});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CarDetail(car: car, carService: carService),
-          ),
-        );
+        // Naviguer vers l'interface de détail de l'entretien lors de l'appui sur la carte
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => EntretienDetail(entretien: entretien, entretienService: entretienService),
+        //   ),
+        // );
       },
       child: Container(
         width: 2000, // Ajustez la largeur selon vos besoins
@@ -36,7 +35,7 @@ class CarCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   image: DecorationImage(
-                    image: AssetImage('assets/images/Dacia_Logan.jpg'), // Utilisez car.image comme URL de l'image
+                    image: AssetImage('assets/images/your_background_image.jpg'), // Utilisez entretien.image comme URL de l'image
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -55,7 +54,7 @@ class CarCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${car.marque} ${car.modele}',
+                      'Titre: ${entretien.titre}',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -64,7 +63,15 @@ class CarCard extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Immatriculation: ${car.immatriculation}',
+                      'Immatriculation: ${entretien.immatriculation}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Cartype: ${entretien.cartype}',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,

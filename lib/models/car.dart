@@ -1,15 +1,15 @@
 class Car {
-  final String immatriculation;
-  final String marque;
-  final String modele;
-  final String? type;
-  final String? carburant;
-  final String? boite;
-  final String? cylindree;
-  final String? disponibility;
-  final String? etatVoiture;
-  final double? prixParJour;
-  final String image;
+  String immatriculation;
+  String marque;
+  String modele;
+  String? type;
+  String? carburant;
+  String? boite;
+  String? cylindree;
+  String? disponibility;
+  String? etatVoiture;
+  double? prixParJour;
+  String image;
 
   Car({
     required this.immatriculation,
@@ -39,5 +39,19 @@ class Car {
       prixParJour: json['prixParJour']?.toDouble(),
       image: json['image'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'immatriculation': immatriculation,
+      'marque': marque,
+      'modele': modele,
+      
+      'carburant': carburant,
+      'boite': boite,
+      
+      
+      'image': image,
+    };
   }
 }

@@ -38,6 +38,10 @@ dependencies:
   http: ^1.1.2
   flutter_svg: ^2.0.7
   syncfusion_flutter_calendar: ^23.2.7
+  network_image: ^0.1.1
+  cached_network_image: ^3.3.0
+  image_picker: ^1.0.5
+  dropdown_search: ^4.0.0
 
 
 
