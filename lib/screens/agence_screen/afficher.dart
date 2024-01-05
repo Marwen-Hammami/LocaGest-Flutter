@@ -4,6 +4,7 @@ import 'modifier.dart';
 import 'ajouter.dart'; // Importez la page Ajouter
 import 'agence_service.dart' as AgenceService;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -159,6 +160,26 @@ class AgenceGridItem extends StatelessWidget {
                       launchMapURL(agence.latitude, agence.longitude);
                     },
                     child: const Text('Voir sur la carte'),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    height: 200,
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(agence.latitude, agence.longitude),
+                        zoom: 15,
+                      ),
+                      markers: {
+                        Marker(
+                          markerId: MarkerId(agence.agenceName),
+                          position: LatLng(agence.latitude, agence.longitude),
+                          infoWindow: InfoWindow(
+                            title: agence.agenceName,
+                            snippet: agence.adresse,
+                          ),
+                        ),
+                      },
+                    ),
                   ),
                 ],
               ),

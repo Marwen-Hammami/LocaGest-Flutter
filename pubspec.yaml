@@ -42,6 +42,7 @@ dependencies:
   cached_network_image: ^3.3.0
   image_picker: ^1.0.5
   dropdown_search: ^4.0.0
+  google_maps_flutter: ^2.2.4
 
 
 
