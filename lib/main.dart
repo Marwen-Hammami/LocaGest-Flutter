@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 import 'package:locagest/screens/User/DashboardUser.dart';
 // import 'package:locagest/screens/User/FogotPassword.dart';
 // import 'package:locagest/screens/User/OtpVerify.dart';
 import 'package:locagest/screens/User/SignIn.dart';
+import 'package:locagest/screens/agence_screen/afficher.dart';
 // import 'package:locagest/screens/User/SignUp.dart';
 
 import 'package:locagest/screens/chat_screen/dashboard_chat.dart';
@@ -17,19 +19,19 @@ import 'package:locagest/screens/Garage/Tools/AddTools.dart';
 import 'package:locagest/providers/reservation_provider.dart';
 import 'package:locagest/screens/reservation_screen/reservation_screen.dart';
 import 'package:provider/provider.dart';
+
 import 'package:locagest/screens/User/SignUp.dart';
 import 'package:locagest/screens/User/profile.dart';
+import 'package:locagest/screens/GestionFlotte/Accueil.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ReservationProvider()),
-        // ... autres fournisseurs nécessaires
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => ReservationProvider()),
+      // ... autres fournisseurs nécessaires
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -58,23 +60,10 @@ class _HomeScreenState extends State<HomeScreen> {
     UserProfile(),
 
     // Content for Agence-Skander tab // call the external file for your home screen
-    Container(
-      color: Colors.purple.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Agence-Skander',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+    Afficher(),
     // Content for Flotte-Maamoun tab // call the external file for your home screen
-    Container(
-      color: Colors.red.shade100,
-      alignment: Alignment.center,
-      child: const Text(
-        'Flotte-Maamoun',
-        style: TextStyle(fontSize: 40),
-      ),
-    ),
+
+    Accueil(),
     // Content for Reservation-Jouhayna tab // call the external file for your home screen
 
     ReservationScreen(),
